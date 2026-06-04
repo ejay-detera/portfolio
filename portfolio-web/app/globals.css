@@ -8,7 +8,7 @@
   --color-text-primary: #E8EFF0;
   --color-text-secondary: #8FA8AE;
   
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 }
 

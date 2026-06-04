@@ -17,7 +17,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 100;
-      
+
       for (const item of NAV_ITEMS) {
         const el = document.getElementById(item.href.replace("#", ""));
         if (el) {
@@ -29,7 +29,7 @@ export default function Navbar() {
           }
         }
       }
-      
+
       if (window.scrollY < 100) {
         setActiveSection("");
       }
@@ -54,18 +54,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-surface/30 bg-base/80 backdrop-blur-md transition-all duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo / Brand Name */}
-          <div className="flex-shrink-0">
-            <a 
-              href="#home" 
-              onClick={(e) => handleNavClick(e, "#home")}
-              className="text-lg font-bold tracking-wider text-text-primary transition hover:text-accent"
-            >
-              E-jay P. Detera
-            </a>
-          </div>
-
+        <div className="flex h-16 items-center justify-center">
           {/* Desktop Nav */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-8">
@@ -74,9 +63,8 @@ export default function Navbar() {
                   key={item.name}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.href)}
-                  className={`relative py-2 text-sm font-medium transition duration-200 hover:text-accent ${
-                    activeSection === item.href ? "text-accent" : "text-text-secondary"
-                  }`}
+                  className={`relative py-2 text-sm font-medium transition duration-200 hover:text-accent ${activeSection === item.href ? "text-accent" : "text-text-secondary"
+                    }`}
                 >
                   {item.name}
                   {activeSection === item.href && (
@@ -120,9 +108,8 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-80 border-b border-surface/30 bg-base" : "max-h-0"
-        }`}
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-80 border-b border-surface/30 bg-base" : "max-h-0"
+          }`}
         id="mobile-menu"
       >
         <div className="space-y-1 px-4 pb-4 pt-2">
@@ -131,11 +118,10 @@ export default function Navbar() {
               key={item.name}
               href={item.href}
               onClick={(e) => handleNavClick(e, item.href)}
-              className={`block rounded-md px-3 py-2 text-base font-medium ${
-                activeSection === item.href
-                  ? "bg-surface text-accent"
-                  : "text-text-secondary hover:bg-surface/30 hover:text-text-primary"
-              }`}
+              className={`block rounded-md px-3 py-2 text-base font-medium ${activeSection === item.href
+                ? "bg-surface text-accent"
+                : "text-text-secondary hover:bg-surface/30 hover:text-text-primary"
+                }`}
             >
               {item.name}
             </a>

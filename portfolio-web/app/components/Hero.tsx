@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 
 const ROLES = [
   "SOFTWARE DEVELOPER",
-  "FULL-STACK ENGINEER",
-  "UI/UX ENTHUSIAST",
+  "FULL-STACK DEVELOPER",
+  "UI/UX DESIGNER",
+  "MOBILE DEVELOPER",
+  "SOFTWARE ARCHITECT"
 ];
 
 const STATS = [
-  { value: "20+", label: "Projects Completed" },
+  { value: "5", label: "Projects Completed" },
   { value: "3+", label: "Years Experience" },
-  { value: "10+", label: "Happy Clients" },
+  { value: "Junior", label: "BSIT Student" },
 ];
 
 export default function Hero() {
@@ -22,7 +24,7 @@ export default function Hero() {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     const fullText = ROLES[currentRoleIndex];
-    
+
     const handleType = () => {
       if (!isDeleting) {
         setCurrentText(fullText.substring(0, currentText.length + 1));
@@ -38,7 +40,7 @@ export default function Hero() {
           return;
         }
       }
-      
+
       const speed = isDeleting ? 40 : 100;
       timer = setTimeout(handleType, speed);
     };
@@ -61,20 +63,20 @@ export default function Hero() {
     <section id="home" className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden py-12 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full z-10 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           {/* Left Content Column */}
           <div className="lg:col-span-7 flex flex-col justify-center space-y-8">
             <div className="space-y-4">
               <span className="text-sm font-bold tracking-widest text-accent uppercase">
-                Welcome to my portfolio
+                Welcome!
               </span>
               <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
                 Hi, I'm <span className="text-accent">E-jay</span>
               </h1>
-              
+
               {/* Typewriter Display */}
               <div className="inline-flex items-center bg-surface/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-accent/20 w-fit">
-                <span className="text-sm font-semibold tracking-widest text-text-primary sm:text-base">
+                <span className="text-sm font-semibold tracking-widest sm:text-base" style={{ color: 'white' }}>
                   I'M A <span className="text-accent">{currentText}</span>
                   <span className="ml-1 animate-pulse border-r-2 border-accent h-5 inline-block align-middle">&nbsp;</span>
                 </span>
@@ -82,8 +84,7 @@ export default function Hero() {
             </div>
 
             <p className="text-base text-text-secondary sm:text-lg max-w-xl leading-relaxed">
-              I design and build reliable, scalable web applications with smooth user experiences. 
-              Let's turn your concept into high-quality code.
+
             </p>
 
             {/* Button Actions */}
@@ -141,7 +142,7 @@ export default function Hero() {
                   alt="E-jay P. Detera"
                   className="w-full h-full object-cover object-center transition duration-700 group-hover:scale-102"
                 />
-                
+
                 {/* Edge blending overlays: only washes out the very edges of the photo frame */}
                 {/* Left Edge Blend */}
                 <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-base to-transparent z-10 pointer-events-none" />

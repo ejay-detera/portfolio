@@ -2,10 +2,13 @@ import SectionHeader from "./SectionHeader";
 
 export default function About() {
   const skills = [
-    { category: "Frontend", items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Vue.js", "HTML5/CSS3"] },
-    { category: "Backend", items: ["Node.js", "PHP", "Laravel", "Express", "RESTful APIs", "GraphQL"] },
-    { category: "Database & DevOps", items: ["PostgreSQL", "MySQL", "MongoDB", "Docker", "Git", "AWS"] },
+    { category: "Frontend", items: ["HTML5", "CSS3", "JavaScript", "React", "Tailwind CSS"] },
+    { category: "Backend", items: ["Next.js", "Laravel", "Python", "Nginx"] },
+    { category: "Databases", items: ["PostgreSQL", "MySQL", "SQLite", "Supabase", "Firebase", "MongoDB"] },
+    { category: "Tools & DevOps", items: ["Git", "GitHub", "Docker", "VS Code", "Figma"] },
+    { category: "Desktop", items: ["QT", "PyQt", "Tkinter"] },
   ];
+
 
   return (
     <section id="about" className="py-20 md:py-28 bg-base-light border-y border-surface/10 relative z-10">
@@ -21,14 +24,15 @@ export default function About() {
               Passionate developer building modern, performant web applications.
             </h3>
             <p className="text-text-secondary leading-relaxed">
-              Hello! I'm E-jay, a software developer dedicated to crafting efficient digital solutions. 
-              My journey in software development began with a curiosity about how websites and systems run 
-              behind the scenes, leading me to specialize in building robust full-stack applications.
+              Hello! I'm E-jay, a fullstack developer dedicated to crafting a reliable and efficient digital solutions.
+              My journey in software development began with a simple html and css website, and then i started
+              learning how the websites and systems run behind the scenes, leading me to specialize not only in building
+              software applications but also in database design and system architecture.
             </p>
             <p className="text-text-secondary leading-relaxed">
-              I enjoy translating complex user requirements into elegant, maintainable code. My primary 
-              goal is to design architectures that scale and provide responsive, visually pleasing user 
-              interfaces. I am always eager to learn new techniques and follow industry best practices.
+              I am currently a 3rd year Information Technology Student at Polytechnic University of the Philippines - Quezon City.
+              I am still inexperienced, but I am willing to learn and put my heart on it. I am looking for an opportunity to grow
+              my skills and knowledge in software development and make a meaningful contribution to a team.
             </p>
 
             {/* Quick Details Cards */}
@@ -38,16 +42,25 @@ export default function About() {
                 <div className="text-sm text-text-secondary mt-1">Experienced in both client-side interfaces and server-side databases.</div>
               </div>
               <div className="rounded-xl border border-accent/15 bg-surface/30 p-4 transition-all duration-300 hover:border-accent/30">
-                <div className="font-semibold text-white">Clean Code Advocate</div>
+                <div className="font-semibold text-white">System Design</div>
+                <div className="text-sm text-text-secondary mt-1">Experienced in both client-side interfaces and server-side databases.</div>
+              </div>
+              <div className="rounded-xl border border-accent/15 bg-surface/30 p-4 transition-all duration-300 hover:border-accent/30">
+                <div className="font-semibold text-white">Database Design</div>
                 <div className="text-sm text-text-secondary mt-1">Focused on writing readable, testable, and maintainable software patterns.</div>
               </div>
+              <div className="rounded-xl border border-accent/15 bg-surface/30 p-4 transition-all duration-300 hover:border-accent/30">
+                <div className="font-semibold text-white">Microservice Experience</div>
+                <div className="text-sm text-text-secondary mt-1">Experienced in building and maintaining microservice-based applications.</div>
+              </div>
             </div>
+
           </div>
 
           {/* Skills Column */}
           <div className="lg:col-span-6 space-y-8 bg-surface/20 rounded-3xl p-6 md:p-8 border border-accent/10">
             <h3 className="text-xl font-bold text-white mb-4">My Technical Stack</h3>
-            
+
             <div className="space-y-6">
               {skills.map((group, index) => (
                 <div key={index} className="space-y-3">
