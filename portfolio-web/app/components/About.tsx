@@ -3,6 +3,7 @@ import SectionHeader from "./SectionHeader";
 export default function About() {
   const skills = [
     { category: "Frontend", items: ["HTML5", "CSS3", "JavaScript", "React", "Tailwind CSS"] },
+    { category: "Mobile", items: ["Flutter", "FlutterFlow"] },
     { category: "Backend", items: ["Next.js", "Laravel", "Python", "Nginx"] },
     { category: "Databases", items: ["PostgreSQL", "MySQL", "SQLite", "Supabase", "Firebase", "MongoDB"] },
     { category: "Tools & DevOps", items: ["Git", "GitHub", "Docker", "VS Code", "Figma"] },
