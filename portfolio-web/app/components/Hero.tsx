@@ -14,14 +14,14 @@ export default function Hero() {
   };
 
   return (
-    <section 
-      id="home" 
+    <section
+      id="home"
       className="relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[860px] flex items-center border-b border-[#363535] bg-[#06070E] overflow-hidden py-10 lg:py-0"
     >
       {/* Background Animated ShapeGrid (React Bits) */}
       <div className="absolute inset-0 z-0">
-        <ShapeGrid 
-          speed={0.3} 
+        <ShapeGrid
+          speed={0.3}
           squareSize={32}
           direction="diagonal"
           borderColor="rgba(255, 255, 255, 0.08)"
@@ -33,10 +33,10 @@ export default function Hero() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full h-full relative z-10 flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center h-full">
-          
+
           {/* Left Column: Massive Editorial Typography & Action CTA (Niko Kane Inspired) */}
           <div className="lg:col-span-7 flex flex-col justify-center space-y-5 lg:space-y-6 z-20 py-4 lg:py-8">
-            
+
             {/* Top Red Eyebrow Tag */}
             <div className="flex items-center gap-2">
               <span className="text-xs sm:text-sm font-mono font-bold tracking-widest text-[var(--brand-red)] uppercase flex items-center gap-2">
@@ -47,14 +47,14 @@ export default function Hero() {
 
             {/* Massive Hero Name with Integrated Rotating Stamp */}
             <div className="relative w-fit">
-              <h1 
-                className="text-6xl sm:text-8xl lg:text-7xl xl:text-8xl font-black tracking-tight uppercase leading-[0.85]" 
+              <h1
+                className="text-6xl sm:text-8xl lg:text-7xl xl:text-8xl font-black tracking-tight uppercase leading-[0.85]"
                 style={{ color: '#FFFFFF' }}
               >
                 <span className="block">E-JAY</span>
                 <span className="inline-flex items-center gap-3 sm:gap-4 lg:gap-5">
                   <span>DETERA</span>
-                  <span 
+                  <span
                     className="inline-flex items-center justify-center select-none"
                     style={{ color: '#E5A93C' }}
                   >
@@ -79,24 +79,24 @@ export default function Hero() {
               {/* Hand-Drawn Red Swooping Underline */}
               <div className="w-56 sm:w-80 mt-3 text-[var(--brand-red)]">
                 <svg viewBox="0 0 320 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-                  <path 
-                    d="M4 14C65 4 135 18 200 8C250 2 290 14 316 11" 
-                    stroke="currentColor" 
-                    strokeWidth="4.5" 
-                    strokeLinecap="round" 
+                  <path
+                    d="M4 14C65 4 135 18 200 8C250 2 290 14 316 11"
+                    stroke="currentColor"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
                   />
                 </svg>
               </div>
             </div>
 
             {/* Editorial Bio Statement */}
-            <p 
-              className="text-sm sm:text-base max-w-lg leading-relaxed font-sans pt-1" 
+            <p
+              className="text-sm sm:text-base max-w-lg leading-relaxed font-sans pt-1"
               style={{ color: '#CBD5E1' }}
             >
               I build resilient digital products with an emphasis on robust database design,
               clean system architecture, and modern full-stack web and mobile applications.
-              Currently a 3rd-year IT student at Polytechnic University of the Philippines.
+              Currently a 4th Year IT student at Polytechnic University of the Philippines.
             </p>
 
             {/* Prominent Action CTA Buttons */}
@@ -135,10 +135,10 @@ export default function Hero() {
 
           {/* Right Column: Commanding Portrait Showcase (Niko Kane Inspired Artwork) */}
           <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end h-full min-h-[380px] sm:min-h-[460px] lg:min-h-[580px]">
-            
+
             {/* The Graphic Canvas Container */}
             <div className="relative flex items-end justify-center w-full max-w-[380px] sm:max-w-[440px] lg:max-w-[500px] h-full">
-              
+
               {/* Graphic Element 1: Large Painted Yellow Square Swatch behind torso/head */}
               <img
                 src="/paint-square.png"
