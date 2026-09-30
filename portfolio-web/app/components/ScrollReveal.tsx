@@ -13,15 +13,18 @@ export default function ScrollReveal({ children, className = "" }: ScrollRevealP
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          // Dynamically sets visibility to animate in AND out on scroll
-          setIsVisible(entry.isIntersecting);
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          // Once visible, keep it visible for smooth UX
+          if (domRef.current) {
+            observer.unobserve(domRef.current);
+          }
+        }
       },
       {
-        threshold: 0.05, // Trigger as soon as 5% of the section is visible
-        rootMargin: "-50px 0px -50px 0px", // Margins to account for sticky navbar and screen boundaries
+        threshold: 0.08,
+        rootMargin: "0px 0px -40px 0px",
       }
     );
 
@@ -40,10 +43,10 @@ export default function ScrollReveal({ children, className = "" }: ScrollRevealP
   return (
     <div
       ref={domRef}
-      className={`transition-all duration-700 ease-out transform origin-center ${
+      className={`transition-all duration-700 ease-out transform ${
         isVisible
-          ? "opacity-100 translate-y-0 scale-100"
-          : "opacity-0 translate-y-6 scale-[0.99] pointer-events-none"
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-5"
       } ${className}`}
     >
       {children}

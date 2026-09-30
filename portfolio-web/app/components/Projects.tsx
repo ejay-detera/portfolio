@@ -1,207 +1,628 @@
 "use client";
 
-import { useState } from "react";
-import SectionHeader from "./SectionHeader";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import SpecularButton from "./SpecularButton";
 
-const CATEGORIES = ["All", "Web App", "Mobile App", "Desktop App"];
+export interface Project {
+  id: string;
+  title: string;
+  category: "Hackathon Systems" | "School Works" | "Commissions";
+  badge: string;
+  subtitle: string;
+  description: string;
+  longDescription: string;
+  architectureHighlights: string[];
+  tech: string[];
+  image: string;
+  githubLink: string;
+  githubMobileLink?: string;
+  liveLink?: string;
+}
 
-const PROJECTS = [
+const PROJECTS: Project[] = [
+  // ---------------- HACKATHON SYSTEMS ----------------
   {
-    title: "Marekwenta POS",
-    description: "A desktop point-of-sale system developed for Mare Cafe, designed and submitted as a final project for an Object-Oriented Programming course. The system handles end-to-end sales operations — from order processing to inventory tracking — with real-time ingredient deduction upon product sale. Contributed to the core UI layout and all backend business logic powering the POS workflows.",
-    tech: ["C#", "SQLite", "WinForms"],
-    category: "Desktop App",
-    badge: "Team Project",
-    image: "/MareKwenta POS.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    id: "floodguard",
+    title: "Floodguard",
+    category: "Hackathon Systems",
+    badge: "Disaster Tech",
+    subtitle: "Real-Time Flood Level Monitoring & Offline SOS",
+    description: "Real-time flood level monitoring alerts with offline SOS emergency signaling powered by PAGASA API telemetry.",
+    longDescription: "Floodguard provides real-time flood monitoring alerts and emergency response capabilities during severe weather disturbances. It integrates the Philippine Atmospheric, Geophysical and Astronomical Services Administration (PAGASA) API to ingest live hydrometeorological data, track water level thresholds, and broadcast immediate advisories to at-risk communities. An offline SOS feature allows stranded citizens to transmit emergency distress beacons even when cellular and data connectivity fail.",
+    architectureHighlights: [
+      "Real-time flood telemetry integration via PAGASA API data streams",
+      "Offline SOS emergency beaconing protocol for disaster-stricken areas with compromised connectivity",
+      "Reactive event-driven alerts and live flood level dashboards built on Next.js and Supabase",
+    ],
+    tech: ["Next.js", "Supabase", "PAGASA API", "TypeScript", "Tailwind CSS"],
+    image: "/flood-guard.jpg",
+    githubLink: "https://github.com/Zanti00/floodguard-2",
   },
   {
+    id: "reliefchain",
+    title: "ReliefChain",
+    category: "Hackathon Systems",
+    badge: "Crypto Relief",
+    subtitle: "Decentralized Aid Giving & Choice Platform",
+    description: "Relief giving made easier—recipients can pick and choose their relief type (food stamps, cash). Leverages Stellar cryptocurrency for cheaper, faster transactions.",
+    longDescription: "ReliefChain revolutionizes humanitarian aid distribution by giving beneficiaries direct choice over their aid—empowering them to select between food stamps, essential vouchers, or direct cash relief. By utilizing the Stellar blockchain network, the platform minimizes transaction overhead and remittance delays, operating through a dedicated React Native mobile app for recipients and a Next.js administrative dashboard for relief coordinators.",
+    architectureHighlights: [
+      "Stellar SDK integration enabling near-zero transaction fees and instant cryptographic relief disbursements",
+      "Custom relief allocation module allowing recipients to select food stamps or direct cash relief",
+      "Cross-platform architecture: React Native mobile client for recipients & Next.js admin portal on Supabase",
+    ],
+    tech: ["Next.js", "React Native", "Supabase", "Stellar SDK", "TypeScript", "Tailwind CSS"],
+    image: "/relief-chain.png",
+    githubLink: "https://github.com/ejay-detera/relief-chain-web",
+    githubMobileLink: "https://github.com/ejay-detera/relief-chain",
+  },
+  {
+    id: "memolink",
+    title: "Memolink",
+    category: "Hackathon Systems",
+    badge: "AI Healthcare",
+    subtitle: "Personalized AI Caregiver & Companion for Seniors",
+    description: "Personalized AI caregiver companion for the elderly leveraging Gemini API & NLP, featuring medicine reminders, elderly-specific chatbot, and memory lane.",
+    longDescription: "Memolink is an intelligent, personalized AI caregiver companion designed to support the elderly and their caregivers. Powered by Google's Gemini API and Natural Language Processing (NLP), the app provides a warm, conversational AI companion tailored to senior citizens, alongside an interactive 'Memory Lane' to preserve and recount cherished life stories. For family and professional caregivers, Memolink provides scheduling tools to input and automate critical medication reminders.",
+    architectureHighlights: [
+      "Empathetic conversational AI chatbot personalized for elderly care using Gemini API and NLP",
+      "Caregiver dashboard for scheduling recurring medicine reminders and tracking patient wellness",
+      "Interactive Memory Lane feature capturing nostalgic life moments and family stories via Supabase",
+    ],
+    tech: ["React Native", "Supabase", "Gemini API", "NLP", "TypeScript"],
+    image: "/memo-link.png",
+    githubLink: "https://github.com/ejay-detera/memolink",
+  },
+
+  // ---------------- SCHOOL WORKS ----------------
+  {
+    id: "loreforge",
     title: "LoreForge",
-    description: "An AI-powered, community-driven turn-based RPG developed independently from system architecture through deployment, submitted for an Advanced Database and Emerging Technologies course. The game dynamically generates a complete campaign narrative — including combat encounters, choices, and item discoveries — through the Gemini API, ensuring a unique experience with every playthrough. Supports multiple genres (Fantasy, Horror, Sci-Fi) and allows players to publish their campaigns for others to experience and respond to.",
-    tech: ["Laravel", "React", "MySQL", "Gemini API"],
-    category: "Web App",
-    badge: "Solo",
+    category: "School Works",
+    badge: "Solo Project",
+    subtitle: "AI-Powered Narrative RPG & Campaign Engine",
+    description: "An AI-powered turn-based RPG dynamically orchestrating campaign narratives, combat encounters, and item discoveries via Google Gemini API.",
+    longDescription: "LoreForge was developed independently from system architecture through production deployment for an Advanced Database & Emerging Technologies course. The platform leverages Google's Gemini API to generate dynamic storytelling scenarios, procedural NPC dialogue, and encounter outcomes tailored to player choices across multiple genres (Fantasy, Sci-Fi, Horror). Users can publish custom campaigns to the community feed.",
+    architectureHighlights: [
+      "Dynamic prompt engineering with structured JSON schema outputs from Gemini API",
+      "Relational MySQL schema tracking multi-branch narrative states and player inventory",
+      "Reactive player UI built with React and Tailwind CSS hooked to a Laravel REST API",
+    ],
+    tech: ["Laravel", "React", "MySQL", "Gemini API", "Tailwind CSS"],
     image: "/LoreForge.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    githubLink: "https://github.com/ejay-detera/loreforge",
   },
   {
+    id: "aigo",
     title: "AiGO",
-    description: "An AI-driven travel planning platform developed for a Web Development course. AiGO generates personalized trip itineraries complete with destination photos sourced from the Unsplash API, supports multi-traveler budgeting, and enables users to share and save curated trip plans within a community. A token-based system incentivizes engagement — users earn generation credits by interacting with others' plans through comments and ratings. Contributed as a full-stack developer across key features and the overall system architecture.",
+    category: "School Works",
+    badge: "Course Project",
+    subtitle: "AI-Driven Itinerary & Travel Budgeting Platform",
+    description: "AI travel planning platform generating day-by-day itineraries, Unsplash destination visuals, and multi-traveler budget coordination.",
+    longDescription: "AiGO automates travel planning through generative AI. Users input vacation duration, budget, and travel preferences to receive itemized schedules paired with geo-tagged images from the Unsplash API. A token-based gamification system rewards users who interact with the community by sharing itineraries and tips.",
+    architectureHighlights: [
+      "Multi-agent prompt pipelining for parallel itinerary generation and budget calculations",
+      "Unsplash API caching layer reducing outbound latency and API quota exhaustion",
+      "MSSQL database schema with stored procedures for reliable community ratings and ledger transactions",
+    ],
     tech: ["Laravel", "React", "MSSQL", "Gemini API", "Unsplash API"],
-    category: "Web App",
-    badge: "4-Person Team",
     image: "/AiGO.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    githubLink: "https://github.com/MaChewwwww/AiGO",
   },
   {
-    title: "AcadHeal",
-    description: "A student-focused mobile application developed independently for a Mobile Development course. AcadHeal addresses academic burnout by combining productivity tools with mental wellness features — offering structured study sessions accompanied by ambient music, daily motivational quotes, and scheduled guided meditation. The app is designed to reduce study-related stress and encourage healthier, more sustainable academic habits.",
-    tech: ["FlutterFlow", "Firebase"],
-    category: "Mobile App",
-    badge: "Solo",
-    image: "/AcadHeal.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    id: "marekwenta",
+    title: "MareKwenta POS",
+    category: "School Works",
+    badge: "Final Course Project",
+    subtitle: "Point-of-Sale & Raw-Ingredient Inventory System",
+    description: "Desktop point-of-sale system for Mare Cafe handling end-to-end sales, transaction auditing, and automated ingredient deduction upon checkout.",
+    longDescription: "A robust desktop POS system designed for Mare Cafe. It coordinates order dispatching, receipts generation, real-time inventory deductions at the raw-ingredient level, and analytical end-of-day sales reporting. Contributed to the overall UI layout and engineered the core business logic and SQLite database layer.",
+    architectureHighlights: [
+      "Atomic SQLite transactions preventing inventory desynchronization during high-traffic order bursts",
+      "Modular Object-Oriented C# WinForms design pattern with clear separation of concerns",
+      "Dynamic recipe-to-inventory deduction algorithm mapping menu items to grams/milliliters of stock",
+    ],
+    tech: ["C#", "SQLite", "WinForms", ".NET Framework"],
+    image: "/MareKwenta POS.jpg",
+    githubLink: "https://github.com/ejay-detera/MareKwenta-POS",
   },
+
+  // ---------------- COMMISSIONS ----------------
   {
-    title: "HandLingo 2",
-    description: "A research-oriented mobile application developed independently for a Research Fundamentals course, aimed at making Filipino Sign Language (FSL) more accessible to non-deaf learners. HandLingo 2 offers structured, progressive lessons spanning greetings to basic sentences, supplemented by quizzes, personal reflection notepads, and live video/group call functionality powered by Agora AI. The application's feature set is grounded in Social Constructivist Theory, with each module mapped to one of its foundational pillars.",
-    tech: ["Flutter", "Supabase", "Agora AI"],
-    category: "Mobile App",
-    badge: "Solo • Research",
-    image: "/HandLingo 2.jpg",
-    githubLink: "#",
-    liveLink: "#",
-  },
-  {
+    id: "cyperus",
     title: "Cyperus",
-    description: "A commissioned e-commerce web application built for a capstone project at PLMun. Cyperus leverages AI to learn individual customer preferences over time, identifying frequently visited shops and commonly purchased items to deliver personalized product recommendations. Served as a full-stack contributor, responsible for building the main shopping experience — from the product browsing interface to the ordering flow.",
-    tech: ["Next.js", "PostgreSQL", "AI Integrated"],
-    category: "Web App",
-    badge: "Commissioned",
+    category: "Commissions",
+    badge: "Commissioned Capstone",
+    subtitle: "AI-Powered Adaptive E-Commerce Marketplace",
+    description: "Commissioned e-commerce web platform for PLMun capstone that learns customer browsing patterns to provide hyper-personalized recommendations.",
+    longDescription: "Cyperus was commissioned as a capstone application for PLMun students. The platform observes customer navigation patterns, frequently viewed storefronts, and purchasing history to feed an intelligent recommendation engine. Served as the lead full-stack developer responsible for the shopping catalog, cart flow, and secure order processing.",
+    architectureHighlights: [
+      "Server-side rendered Next.js catalog ensuring SEO discoverability and sub-second page loads",
+      "PostgreSQL normalized database with complex indexing for product search and filtering",
+      "Clean modular API routes handling checkout workflows and inventory reservation",
+    ],
+    tech: ["Next.js", "PostgreSQL", "Tailwind CSS", "TypeScript", "AI Integration"],
     image: "/Cyperus.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    githubLink: "https://github.com/MaChewwwww/Cyperus",
   },
   {
+    id: "trustmart",
     title: "TrustMart",
-    description: "A commissioned e-commerce platform developed for a capstone project at PLMun, integrating artificial intelligence for both security enforcement and adaptive user learning. Served as a full-stack contributor, building the core shopping experience from product discovery through checkout, while contributing to the system's overall structure and data flow.",
-    tech: ["Next.js", "PostgreSQL", "AI Integrated"],
-    category: "Web App",
-    badge: "Commissioned",
+    category: "Commissions",
+    badge: "Commissioned Capstone",
+    subtitle: "Security-First AI E-Commerce Platform",
+    description: "Full-stack e-commerce solution integrating artificial intelligence for fraud deterrence, seller verification, and personalized discovery.",
+    longDescription: "TrustMart was commissioned to demonstrate modern e-commerce security and intelligent consumer matching. Acted as a full-stack engineer responsible for architecting the customer ordering journey, responsive storefront interface, and role-based access control for vendors and admins.",
+    architectureHighlights: [
+      "Role-Based Access Control (RBAC) separating administrative actions, merchant stores, and customer accounts",
+      "Robust PostgreSQL relational models with foreign-key constraints and transaction rollbacks",
+      "Responsive frontend designed to deliver desktop-class speed on mobile browsers",
+    ],
+    tech: ["Next.js", "PostgreSQL", "Node.js", "Tailwind CSS"],
     image: "/TrustMart.jpg",
-    githubLink: "#",
-    liveLink: "#",
+    githubLink: "https://github.com/MaChewwwww/TrustMart",
   },
 ];
 
-const getBadgeStyles = (badge: string) => {
-  const lowercaseBadge = badge.toLowerCase();
-  if (lowercaseBadge.includes("solo")) {
-    return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-  }
-  if (lowercaseBadge.includes("team") || lowercaseBadge.includes("person")) {
-    return "bg-sky-500/10 text-sky-400 border-sky-500/20";
-  }
-  if (lowercaseBadge.includes("commissioned")) {
-    return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-  }
-  return "bg-accent/10 text-accent border-accent/20";
-};
+const CATEGORIES = ["All", "Hackathon Systems", "School Works", "Commissions"] as const;
 
 export default function Projects() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredProjects = activeCategory === "All"
     ? PROJECTS
-    : PROJECTS.filter(project => project.category === activeCategory);
+    : PROJECTS.filter((p) => p.category === activeCategory);
+
+  // Responsive cards per view calculation
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setCardsPerView(1);
+      } else if (window.innerWidth < 1024) {
+        setCardsPerView(2);
+      } else {
+        setCardsPerView(3);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Reset carousel index when category changes
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [activeCategory]);
+
+  // Lock body scroll and handle escape when modal is active
+  useEffect(() => {
+    if (selectedProject) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSelectedProject(null);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalStyle;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [selectedProject]);
+
+  const maxIndex = Math.max(0, filteredProjects.length - cardsPerView);
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : maxIndex));
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev < maxIndex ? prev + 1 : 0));
+  };
+
+  const totalPages = Math.max(1, maxIndex + 1);
+
+  // Mobile Touch Swipe Handling
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 45;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) {
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      prevSlide();
+    }
+  };
 
   return (
-    <section id="projects" className="py-20 md:py-28 border-t border-surface/20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <SectionHeader title="Featured Projects" className="mb-0" />
+    <section id="projects" className="py-8 md:py-12 border-b border-[var(--border-color)] bg-[var(--bg-base)] relative overflow-hidden flex flex-col justify-center min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[820px]">
+      
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
+        
+        {/* Top Header Row */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6 pb-4 border-b border-[var(--border-color)]">
+          
+          <div className="space-y-2">
+            <span className="text-xs font-bold tracking-widest text-[var(--brand-red)] uppercase font-mono">
+              FEATURED PROJECTS
+            </span>
 
-          {/* Filtering Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 bg-surface/20 p-1.5 rounded-xl border border-accent/10 w-fit mx-auto md:mx-0">
-            {CATEGORIES.map((category) => (
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: '#FFFFFF' }}>
+              Selected work
+            </h2>
+
+            {/* Red / Yellow Wavy Underline */}
+            <div className="w-32 text-[var(--brand-yellow)]">
+              <svg viewBox="0 0 140 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+                <path d="M2 10 Q 20 2 40 10 T 80 10 T 120 10 T 138 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Filtering Category Pills & Carousel Nav Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            
+            {/* Filter Pills */}
+            <div className="flex flex-wrap gap-1 p-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)]">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
+                    activeCategory === cat
+                      ? "bg-[var(--text-primary)] text-[var(--bg-base)] shadow-xs"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Carousel Prev / Next Controls */}
+            <div className="flex items-center gap-2">
               <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  activeCategory === category
-                    ? "bg-surface text-accent shadow-md border border-accent/20"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                onClick={prevSlide}
+                disabled={maxIndex === 0}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#363535] bg-[#12131D] text-white hover:border-[var(--brand-yellow)] hover:bg-[#1A1C29] transition-all cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Previous Projects"
+                aria-label="Previous Projects"
               >
-                {category}
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
+              
+              <span className="text-xs font-mono font-bold text-gray-300 px-1">
+                {String(Math.min(currentIndex + 1, totalPages)).padStart(2, "0")} / {String(totalPages).padStart(2, "0")}
+              </span>
+
+              <button
+                onClick={nextSlide}
+                disabled={maxIndex === 0}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#363535] bg-[#12131D] text-white hover:border-[var(--brand-yellow)] hover:bg-[#1A1C29] transition-all cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Next Projects"
+                aria-label="Next Projects"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* GitHub Specular Button */}
+            <SpecularButton
+              size="sm"
+              onClick={() => window.open("https://github.com/ejay-detera", "_blank")}
+            >
+              <span style={{ color: '#FFFFFF' }}>ALL GITHUB</span>
+              <span style={{ color: '#FFFFFF' }}>→</span>
+            </SpecularButton>
+          </div>
+
+        </div>
+
+        {/* Modern 3-Item Carousel Window with Fixed Minimum Height & Touch Swipe */}
+        <div 
+          className="relative overflow-hidden w-full py-2 min-h-[390px] touch-pan-y select-none"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <div
+            key={activeCategory}
+            className={`flex transition-transform duration-500 ease-out -mx-3 animate-filter-fade ${
+              filteredProjects.length < cardsPerView ? "justify-center" : ""
+            }`}
+            style={{
+              transform: filteredProjects.length < cardsPerView
+                ? "none"
+                : `translateX(-${currentIndex * (100 / cardsPerView)}%)`,
+            }}
+          >
+            {filteredProjects.map((project, idx) => (
+              <div
+                key={project.id}
+                className={`w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3 animate-card-enter ${
+                  filteredProjects.length === 1 ? "max-w-lg" : ""
+                }`}
+                style={{
+                  animationDelay: `${idx * 65}ms`,
+                }}
+              >
+                <div
+                  onClick={() => setSelectedProject(project)}
+                  className="group cursor-pointer flex flex-col justify-between rounded-2xl border-2 border-[#363535] bg-[#0E101A] overflow-hidden transition-all duration-300 hover:border-[var(--brand-yellow)] hover:-translate-y-1 hover:shadow-xl h-[380px]"
+                >
+                  {/* Image Frame Container */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#06070E] border-b border-[#252836] flex-shrink-0">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      draggable={false}
+                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 select-none"
+                    />
+                    
+                    {/* Badge Overlay */}
+                    <div className="absolute top-2.5 left-2.5">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#06070E]/85 text-white backdrop-blur-xs border border-white/10">
+                        {project.badge}
+                      </span>
+                    </div>
+
+                    {/* Category Overlay */}
+                    <div className="absolute top-2.5 right-2.5">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--brand-yellow)] text-[#06070E]">
+                        {project.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card Meta Content */}
+                  <div className="p-4 sm:p-5 flex flex-col justify-between flex-grow space-y-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight group-hover:text-[var(--brand-yellow)] transition-colors truncate" style={{ color: '#FFFFFF' }}>
+                          {project.title}
+                        </h3>
+                        
+                        {/* Editorial Arrow Icon */}
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#363535] text-white group-hover:bg-[var(--brand-yellow)] group-hover:text-[#06070E] group-hover:border-[var(--brand-yellow)] transition-all text-xs flex-shrink-0 ml-2">
+                          →
+                        </span>
+                      </div>
+
+                      <p className="text-xs font-semibold truncate font-mono" style={{ color: '#E5A93C' }}>
+                        {project.subtitle}
+                      </p>
+
+                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Tech Pills */}
+                    <div className="flex flex-wrap gap-1 pt-3 border-t border-[#252836]">
+                      {project.tech.slice(0, 3).map((t, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#1A1C29] text-gray-200 border border-[#2B3045]"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {project.tech.length > 3 && (
+                        <span className="text-[10px] font-mono font-bold self-center ml-1" style={{ color: '#E5A93C' }}>
+                          +{project.tech.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Project Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {filteredProjects.map((project, index) => (
-            <div
-              key={index}
-              className="flex flex-col h-full overflow-hidden rounded-2xl border border-accent/15 bg-[#2c3a3d] transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_4px_20px_-4px_rgba(126,173,184,0.15)] group"
+        {/* Carousel Pagination Dots - Fixed Height Reserved */}
+        <div className="flex items-center justify-center gap-1.5 pt-3 h-8">
+          {maxIndex > 0 && Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                currentIndex === i
+                  ? "w-6 bg-[var(--brand-yellow)]"
+                  : "w-1.5 bg-[#363535] hover:bg-gray-400"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+
+      </div>
+
+      {/* Interactive Project Detail Modal - Guaranteed 100% Upfront, Centered & Scroll-Locked */}
+      {mounted && selectedProject && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 sm:p-6"
+          onClick={() => setSelectedProject(null)}
+        >
+          <div
+            className="relative w-full max-w-2xl max-h-[85vh] rounded-3xl border-2 border-[#363535] bg-[#0E101A] shadow-2xl text-white overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Close Button */}
+            <button
+              onClick={() => setSelectedProject(null)}
+              className="absolute top-4 right-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-[#06070E]/80 text-white hover:bg-[var(--brand-red)] transition-colors cursor-pointer border border-white/20"
+              aria-label="Close modal"
             >
-              {/* Project Image Container (Top) */}
-              <div className="relative w-full h-48 sm:h-52 overflow-hidden border-b border-accent/15">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Scrollable Modal Content */}
+            <div className="overflow-y-auto max-h-[85vh] editorial-scrollbar">
+              
+              {/* Modal Image Header */}
+              <div className="relative aspect-[16/9] w-full bg-[#06070E] overflow-hidden border-b border-[#363535]">
                 <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  draggable={false}
+                  className="w-full h-full object-cover object-top select-none"
                 />
-                {/* Vertical Gradient overlay (blends bottom of the image into the card body) */}
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#2c3a3d] via-[#2c3a3d]/60 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0E101A] via-transparent to-transparent opacity-95" />
+                
+                <div className="absolute bottom-5 left-5 right-5">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-[var(--brand-yellow)] text-[#06070E]">
+                      {selectedProject.category}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-white/20 text-white backdrop-blur-xs">
+                      {selectedProject.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">
+                    {selectedProject.title}
+                  </h3>
+                </div>
               </div>
 
-              {/* Card Content (Bottom) */}
-              <div className="flex flex-col justify-between flex-grow p-5 md:p-6">
-                <div className="space-y-4">
-                  {/* Project Header */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold tracking-wider text-accent uppercase bg-accent/10 px-2 py-0.5 rounded border border-accent/15">
-                      {project.category}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded border ${getBadgeStyles(project.badge)}`}>
-                        {project.badge}
-                      </span>
-                      <a
-                        href={project.githubLink}
-                        className="text-text-secondary hover:text-white transition duration-200"
-                        title="GitHub Repository"
-                      >
-                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-                        </svg>
-                      </a>
-                      <a
-                        href={project.liveLink}
-                        className="text-text-secondary hover:text-white transition duration-200"
-                        title="Live Demo"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Project Title */}
-                  <h3 className="text-lg font-bold text-white group-hover:text-accent transition duration-200">
-                    {project.title}
-                  </h3>
-
-                  {/* Project Description */}
-                  <p className="text-[13px] text-text-secondary leading-relaxed">
-                    {project.description}
+              {/* Modal Body Content */}
+              <div className="p-6 space-y-5">
+                
+                <div>
+                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2" style={{ color: '#E5A93C' }}>
+                    PROJECT OVERVIEW
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-sans">
+                    {selectedProject.longDescription}
                   </p>
                 </div>
 
-                {/* Project Tech Stack */}
-                <div className="flex flex-wrap gap-1.5 pt-4 mt-4 border-t border-surface/20">
-                  {project.tech.map((t, idx) => (
-                    <span
-                      key={idx}
-                      className="text-[10px] font-semibold text-text-secondary bg-surface/40 px-2 py-0.5 rounded"
-                    >
-                      {t}
-                    </span>
-                  ))}
+                {/* Architecture Highlights */}
+                <div className="rounded-xl border border-[#363535] bg-[#141624] p-4 space-y-2.5">
+                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                    ENGINEERING & ARCHITECTURE HIGHLIGHTS
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-gray-300">
+                    {selectedProject.architectureHighlights.map((hl, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-[var(--brand-yellow)] font-bold mt-0.5">✦</span>
+                        <span className="leading-relaxed">{hl}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+
+                {/* Full Tech Stack */}
+                <div>
+                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-gray-400 mb-2">
+                    TECHNOLOGIES UTILIZED
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedProject.tech.map((t, i) => (
+                      <span
+                        key={i}
+                        className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-md border border-[#363535] bg-[#141624] text-white"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="pt-4 flex flex-wrap items-center justify-between gap-4 border-t border-[#363535]">
+                  <div className="flex flex-wrap gap-2.5">
+                    {selectedProject.githubMobileLink ? (
+                      <>
+                        <a
+                          href={selectedProject.githubLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-white text-[#06070E] px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors font-mono"
+                        >
+                          <span>WEB REPO</span>
+                          <span>→</span>
+                        </a>
+                        <a
+                          href={selectedProject.githubMobileLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[#363535] bg-[#141624] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:border-[var(--brand-yellow)] hover:bg-[#1A1C29] transition-colors font-mono"
+                        >
+                          <span>MOBILE REPO</span>
+                          <span>→</span>
+                        </a>
+                      </>
+                    ) : (
+                      <a
+                        href={selectedProject.githubLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full bg-white text-[#06070E] px-5 py-2 text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors font-mono"
+                      >
+                        <span>VIEW GITHUB REPO</span>
+                        <span>→</span>
+                      </a>
+                    )}
+                    {selectedProject.liveLink && (
+                      <a
+                        href={selectedProject.liveLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-[#363535] bg-[#141624] px-5 py-2 text-xs font-bold uppercase tracking-wider text-white hover:border-[var(--brand-yellow)] transition-colors font-mono"
+                      >
+                        <span>LIVE DEMO</span>
+                        <span>↗</span>
+                      </a>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="text-xs font-mono font-bold text-gray-400 hover:text-white transition-colors cursor-pointer"
+                  >
+                    CLOSE [ESC]
+                  </button>
+                </div>
+
               </div>
+
             </div>
-          ))}
-        </div>
-      </div>
+
+          </div>
+        </div>,
+        document.body
+      )}
+
     </section>
   );
 }
+

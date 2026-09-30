@@ -1,55 +1,63 @@
+import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
+import Services from "./components/Services";
 import Projects from "./components/Projects";
 import Experience from "./components/Experience";
+import Certificates from "./components/Certificates";
+import CallToAction from "./components/CallToAction";
 import Footer from "./components/Footer";
 import ScrollReveal from "./components/ScrollReveal";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-base text-text-primary relative overflow-hidden">
-      {/* Subtle Ambient Background Blobs */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-        {/* Blob 1 (glowing accent shade in hero region) */}
-        <div className="absolute top-[5%] left-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-accent/5 blur-[80px] sm:blur-[120px] animate-blob" />
-        {/* Blob 2 (glowing surface shade in projects region) */}
-        <div className="absolute top-[35%] right-[-10%] w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] rounded-full bg-surface/10 blur-[90px] sm:blur-[130px] animate-blob [animation-delay:6s]" />
-        {/* Blob 3 (glowing accent shade in experience region) */}
-        <div className="absolute bottom-[20%] left-[-5%] w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] rounded-full bg-accent/5 blur-[85px] sm:blur-[125px] animate-blob [animation-delay:12s]" />
-      </div>
+    <div className="flex min-h-screen flex-col bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">
+      {/* Initial Page Load / Refresh Loading Screen */}
+      <LoadingScreen />
 
-      {/* Navigation */}
+      {/* Editorial Navigation */}
       <Navbar />
 
-      <main className="flex-grow relative z-10">
+      <main className="flex-grow">
         {/* Hero Section */}
         <ScrollReveal>
           <Hero />
         </ScrollReveal>
 
-        {/* About Me Section */}
+        {/* About Me & Bento Grid Section */}
         <ScrollReveal>
           <About />
         </ScrollReveal>
 
-        {/* Projects Section */}
+        {/* What I can do for you (Services 4-column row) */}
+        <ScrollReveal>
+          <Services />
+        </ScrollReveal>
+
+        {/* Selected Work / Featured Projects Grid */}
         <ScrollReveal>
           <Projects />
         </ScrollReveal>
 
-        {/* Work Experience Section */}
+        {/* Career Experience & Education Timeline */}
         <ScrollReveal>
           <Experience />
         </ScrollReveal>
+
+        {/* Verified Credentials & Certificate Gallery */}
+        <ScrollReveal>
+          <Certificates />
+        </ScrollReveal>
+
+        {/* Have a Project in Mind? (Yellow Ochre Banner) */}
+        <ScrollReveal>
+          <CallToAction />
+        </ScrollReveal>
       </main>
 
-      {/* Footer / Socials Section */}
-      <ScrollReveal>
-        <Footer />
-      </ScrollReveal>
+      {/* Footer / Contact Section */}
+      <Footer />
     </div>
   );
 }
-
-

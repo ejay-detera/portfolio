@@ -1,140 +1,191 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import SpecularButton from "./SpecularButton";
+
+import StaggeredMenu from "./StaggeredMenu";
 
 const NAV_ITEMS = [
-  { name: "About Me", href: "#about" },
-  { name: "Projects", href: "#projects" },
-  { name: "Experience", href: "#experience" },
-  { name: "Socials", href: "#contact" },
+  { name: "ABOUT", href: "#about" },
+  { name: "SERVICES", href: "#services" },
+  { name: "PROJECTS", href: "#projects" },
+  { name: "EXPERIENCE", href: "#experience" },
+  { name: "CREDENTIALS", href: "#credentials" },
+  { name: "CONTACT", href: "#contact" },
+];
+
+const MENU_ITEMS = [
+  { name: "HOME", href: "#home" },
+  { name: "ABOUT", href: "#about" },
+  { name: "SERVICES", href: "#services" },
+  { name: "PROJECTS", href: "#projects" },
+  { name: "EXPERIENCE", href: "#experience" },
+  { name: "CREDENTIALS", href: "#credentials" },
+  { name: "CONTACT", href: "#contact" },
+];
+
+const SOCIAL_ITEMS = [
+  { label: "GitHub", link: "https://github.com/ejay-detera" },
+  { label: "LinkedIn", link: "https://linkedin.com" },
+  { label: "Email", link: "mailto:edetera41@gmail.com" },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
-  // Track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100;
+      // Near top of page, no sub-section is active
+      if (window.scrollY < 100) {
+        setActiveSection("");
+        return;
+      }
+
+      // Check if at the bottom of the page
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 60) {
+        setActiveSection("#contact");
+        return;
+      }
+
+      // Measure using getBoundingClientRect for absolute accuracy with transforms & layouts
+      const navThreshold = 180;
+      let matched = "";
 
       for (const item of NAV_ITEMS) {
-        const el = document.getElementById(item.href.replace("#", ""));
+        const id = item.href.replace("#", "");
+        const el = document.getElementById(id);
         if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(item.href);
-            return;
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= navThreshold && rect.bottom > navThreshold) {
+            matched = item.href;
+            break;
           }
         }
       }
 
-      if (window.scrollY < 100) {
-        setActiveSection("");
+      if (matched) {
+        setActiveSection(matched);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // run once on mount
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    setActiveSection(href);
     const id = href.replace("#", "");
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -80; // offset for sticky navbar
+      const yOffset = -70;
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
-      setIsOpen(false);
     }
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-surface/30 bg-base/80 backdrop-blur-md transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full bg-[#06070E]/90 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-center">
-          {/* Desktop Nav */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-8">
-              {NAV_ITEMS.map((item) => (
+        <div className="flex h-18 items-center justify-between">
+
+          {/* Brand Logo - Guaranteed Pure White High Contrast */}
+          <a
+            href="#home"
+            onClick={(e) => handleNavClick(e, "#home")}
+            className="flex items-center gap-2 font-black tracking-tighter text-sm sm:text-base md:text-lg hover:opacity-85 transition-opacity"
+            style={{ color: '#FFFFFF' }}
+          >
+            <img
+              src="/EJ-LOGO.png"
+              alt="EJ"
+              draggable={false}
+              className="h-5 sm:h-6 w-auto object-contain filter drop-shadow-[0_1px_4px_rgba(255,255,255,0.15)] select-none"
+            />
+            <span className="hidden md:inline" style={{ color: '#FFFFFF' }}>E-JAY DETERA</span>
+            <span
+              className="hidden md:inline-flex items-center justify-center select-none"
+              style={{ color: '#E5A93C' }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-3.5 h-3.5 animate-spin-slow"
+                fill="none"
+                stroke="#E5A93C"
+                strokeWidth="2.8"
+                strokeLinecap="round"
+              >
+                <line x1="12" y1="2" x2="12" y2="22" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                <line x1="4.93" y1="19.07" x2="19.07" y2="4.93" />
+                <circle cx="12" cy="12" r="1.5" fill="#E5A93C" />
+              </svg>
+            </span>
+          </a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-7 text-xs font-semibold tracking-wider">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeSection === item.href;
+              return (
                 <a
                   key={item.name}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.href)}
-                  className={`relative py-2 text-sm font-medium transition duration-200 hover:text-accent ${activeSection === item.href ? "text-accent" : "text-text-secondary"
-                    }`}
+                  className="relative py-1.5 transition-colors duration-200 cursor-pointer font-bold"
+                  style={{ color: isActive ? '#E5A93C' : '#CBD5E1' }}
                 >
-                  {item.name}
-                  {activeSection === item.href && (
-                    <span className="absolute bottom-0 left-0 h-[2px] w-full bg-accent transition-all duration-300" />
+                  <span className="hover:text-white transition-colors">
+                    {item.name}
+                  </span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] rounded-full bg-[var(--brand-yellow)] shadow-[0_0_8px_rgba(229,169,60,0.8)]" />
                   )}
                 </a>
-              ))}
-              <a
-                href="#contact"
-                onClick={(e) => handleNavClick(e, "#contact")}
-                className="rounded-lg bg-surface px-4 py-2 text-sm font-semibold text-text-primary border border-accent/20 transition hover:bg-accent hover:text-base"
-              >
-                Let's Talk
-              </a>
-            </div>
+              );
+            })}
+          </nav>
+
+          {/* Right Action Area: Specular CTA (Desktop) */}
+          <div className="hidden md:flex items-center gap-3">
+            <SpecularButton
+              size="sm"
+              onClick={(e) => handleNavClick(e as any, "#contact")}
+            >
+              <span style={{ color: '#FFFFFF' }}>LET'S WORK TOGETHER</span>
+              <span style={{ color: '#FFFFFF' }}>→</span>
+            </SpecularButton>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              type="button"
-              className="inline-flex items-center justify-center rounded-md p-2 text-text-secondary hover:bg-surface/50 hover:text-text-primary focus:outline-none"
-              aria-controls="mobile-menu"
-              aria-expanded={isOpen}
-            >
-              <span className="sr-only">Open main menu</span>
-              {isOpen ? (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-              )}
-            </button>
+          {/* Mobile Right Controls: StaggeredMenu (React Bits) */}
+          <div className="flex md:hidden items-center">
+            <StaggeredMenu
+              position="right"
+              isFixed={true}
+              showLogo={false}
+              items={MENU_ITEMS.map((item) => ({
+                label: item.name,
+                ariaLabel: `Go to ${item.name} section`,
+                link: item.href,
+                onClick: (e) => handleNavClick(e, item.href),
+              }))}
+              socialItems={SOCIAL_ITEMS}
+              displaySocials={true}
+              displayItemNumbering={true}
+              colors={['#141624', '#DE4E2B', '#E5A93C']}
+              accentColor="#E5A93C"
+              menuButtonColor="#ffffff"
+              openMenuButtonColor="#E5A93C"
+              ctaText="LET'S WORK TOGETHER"
+              ctaLink="#contact"
+              onCtaClick={(e) => handleNavClick(e, "#contact")}
+            />
           </div>
-        </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-80 border-b border-surface/30 bg-base" : "max-h-0"
-          }`}
-        id="mobile-menu"
-      >
-        <div className="space-y-1 px-4 pb-4 pt-2">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className={`block rounded-md px-3 py-2 text-base font-medium ${activeSection === item.href
-                ? "bg-surface text-accent"
-                : "text-text-secondary hover:bg-surface/30 hover:text-text-primary"
-                }`}
-            >
-              {item.name}
-            </a>
-          ))}
-          <a
-            href="#contact"
-            onClick={(e) => handleNavClick(e, "#contact")}
-            className="block w-full text-center rounded-md bg-accent px-4 py-2 mt-4 text-base font-semibold text-base transition hover:bg-accent/90"
-          >
-            Let's Talk
-          </a>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }
