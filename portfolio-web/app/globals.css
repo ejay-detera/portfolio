@@ -1,83 +1,79 @@
 @import "tailwindcss";
 
 @theme {
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-sans: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  --color-base: var(--bg-base);
-  --color-card: var(--bg-card);
-  --color-subtle: var(--bg-subtle);
-  --color-border-main: var(--border-color);
-  --color-border-muted: var(--border-muted);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-
-  --color-accent-yellow: #E5A93C;
-  --color-accent-yellow-light: #FDE68A;
-  --color-accent-red: #DE4E2B;
-  --color-accent-red-dark: #B93815;
-  --color-brand-dark: #06070E;
-  --color-brand-gray: #363535;
-
-  --color-gray-100: #F1F5F9;
-  --color-gray-200: #E2E8F0;
-  --color-gray-300: #CBD5E1;
-  --color-gray-400: #94A3B8;
-  --color-gray-500: #64748B;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1E293B;
-  --color-gray-900: #0F172A;
 }
 
 :root {
-  /* Permanent Dark Mode: #06070E & #363535 with pure white & crisp light text */
-  --bg-base: #06070E;
-  --bg-card: #12131D;
-  --bg-subtle: #191B26;
-  --border-color: #363535;
-  --border-muted: #27282F;
+  /* Architectural Monograph Palette: Warm Carbon ground, Exposed 1px Mullion grid, High-contrast crisp text */
+  --bg-base: #0C0C0E;
+  --bg-card: #131316;
+  --bg-subtle: #19191D;
+  --border-color: #26262B;
+  --border-muted: #1E1E22;
   --text-primary: #FFFFFF;
   --text-secondary: #E2E8F0;
-  --text-muted: #94A3B8;
+  --text-muted: #A1A1AA;
   --brand-yellow: #E5A93C;
   --brand-red: #DE4E2B;
-  --button-text: #FFFFFF;
+  --button-text: #0C0C0E;
   color-scheme: dark;
 }
 
 html {
-  background-color: #06070E;
-  color: #FFFFFF;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   scroll-behavior: smooth;
-  font-family: var(--font-jetbrains-mono), monospace;
+  font-family: var(--font-sans);
   color-scheme: dark;
 }
 
 body {
-  background-color: #06070E;
-  color: #FFFFFF;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   overflow-x: hidden;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Defensive override ensuring text-base is always font-size 1rem, never background color */
+.text-base,
+.sm\:text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Browser Surface Theming */
+::selection {
+  background-color: var(--brand-yellow);
+  color: #0C0C0E;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-yellow);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 4px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Globally disable image dragging across all browsers */
 img {
   -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
-/* Custom Global & Editorial Scrollbars */
+/* Custom Architectural Scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #363535 transparent;
+  scrollbar-color: #26262B #0C0C0E;
 }
 
 ::-webkit-scrollbar {
@@ -85,123 +81,58 @@ img {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #0C0C0E;
 }
 ::-webkit-scrollbar-thumb {
-  background: #363535;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #26262B;
   transition: background-color 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #E5A93C;
 }
 
-/* Modal Specific Modern Sleek Scrollbar */
-.editorial-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #4A4A4A transparent;
-}
-
-.editorial-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-.editorial-scrollbar::-webkit-scrollbar-track {
-  background: rgba(6, 7, 14, 0.5);
-  border-radius: 9999px;
-  margin: 6px 0;
-}
-
-.editorial-scrollbar::-webkit-scrollbar-thumb {
-  background: #4A4A4A;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.2s ease;
-}
-
-.editorial-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #E5A93C;
-  box-shadow: 0 0 8px rgba(229, 169, 60, 0.5);
-}
-
-.editorial-scrollbar::-webkit-scrollbar-thumb:active {
-  background: #DE4E2B;
-}
-
-/* Rotating stamp animation */
-@keyframes spinSlow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spinSlow 20s linear infinite;
-}
-
-/* Gentle floating motion */
-@keyframes floatGentle {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(0.4deg);
-  }
-}
-
-.animate-float-gentle {
-  animation: floatGentle 5s ease-in-out infinite;
-}
-
-/* Dot pattern background */
-.dot-matrix {
-  background-image: radial-gradient(currentColor 1.5px, transparent 1.5px);
-  background-size: 16px 16px;
-}
-
-/* Technical grid background */
-.editorial-grid {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(120, 120, 120, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(120, 120, 120, 0.08) 1px, transparent 1px);
-}
-
-/* Filter Switch Animations */
-@keyframes filterCardEnter {
+/* Initial Page Load Staggered Entrance Animation */
+@keyframes monographReveal {
   0% {
     opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
-  60% {
-    opacity: 0.95;
-    transform: translateY(-2px) scale(1.005);
+    transform: translateY(18px);
+    filter: blur(4px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 
-.animate-card-enter {
-  animation: filterCardEnter 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+.animate-enter {
+  animation: monographReveal 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes filterTrackFade {
-  0% {
-    opacity: 0.15;
+.delay-1 {
+  animation-delay: 80ms;
+}
+
+.delay-2 {
+  animation-delay: 160ms;
+}
+
+.delay-3 {
+  animation-delay: 240ms;
+}
+
+.delay-4 {
+  animation-delay: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
-  100% {
-    opacity: 1;
+  html {
+    scroll-behavior: auto;
   }
 }
-
-.animate-filter-fade {
-  animation: filterTrackFade 0.3s ease-out both;
-}
-

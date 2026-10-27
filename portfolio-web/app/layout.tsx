@@ -1,18 +1,43 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Archivo, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import PreventDrag from "./components/PreventDrag";
+
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
+  display: "swap",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "E-jay P. Detera",
-  description: "Portfolio of E-jay P. Detera — Full-stack developer, software architect, and 3rd-year IT student at PUP Quezon City specializing in resilient web systems, mobile applications, and intelligent database design.",
-  keywords: ["E-jay Detera", "Full-Stack Developer", "Software Architect", "Next.js", "React", "Laravel", "Flutter", "PUP QC"],
+  title: "E-jay P. Detera — Full-Stack Developer & Systems Architect",
+  description:
+    "Portfolio of E-jay P. Detera — Full-stack developer, software architect, and BSIT Student at Polytechnic University of the Philippines - Quezon City Campus specializing in resilient web systems, mobile applications, and relational database design.",
+  keywords: [
+    "E-jay Detera",
+    "Full-Stack Developer",
+    "Software Architect",
+    "Next.js",
+    "React",
+    "Laravel",
+    "Flutter",
+    "PUP QC",
+  ],
   icons: {
     icon: [
       { url: "/EJ-LOGO.png", type: "image/png" },
@@ -23,8 +48,6 @@ export const metadata: Metadata = {
   },
 };
 
-import PreventDrag from "./components/PreventDrag";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,9 +56,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} dark h-full antialiased`}
+      className={`${archivo.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full font-mono antialiased bg-[#06070E] text-white selection:bg-[var(--brand-yellow)] selection:text-black">
+      <body className="min-h-full font-sans antialiased bg-[var(--bg-base)] text-[var(--text-primary)] selection:bg-[var(--brand-yellow)] selection:text-[#0C0C0E]">
         <PreventDrag />
         {children}
       </body>

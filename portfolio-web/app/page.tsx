@@ -1,63 +1,52 @@
-import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import About from "./components/About";
-import Services from "./components/Services";
 import Projects from "./components/Projects";
 import Experience from "./components/Experience";
 import Certificates from "./components/Certificates";
-import CallToAction from "./components/CallToAction";
 import Footer from "./components/Footer";
-import ScrollReveal from "./components/ScrollReveal";
+import ShapeGrid from "./components/ShapeGrid";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">
-      {/* Initial Page Load / Refresh Loading Screen */}
-      <LoadingScreen />
+    <div className="relative flex min-h-screen flex-col bg-[var(--bg-base)] text-[var(--text-primary)]">
+      {/* Global Background Animated ShapeGrid across the entire portfolio */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid
+          speed={0.25}
+          squareSize={36}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(229, 169, 60, 0.16)"
+          shape="square"
+          hoverTrailAmount={3}
+        />
+      </div>
 
-      {/* Editorial Navigation */}
-      <Navbar />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <Navbar />
 
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <ScrollReveal>
-          <Hero />
-        </ScrollReveal>
+        <main className="flex-grow">
+          <div className="animate-enter">
+            <Hero />
+          </div>
 
-        {/* About Me & Bento Grid Section */}
-        <ScrollReveal>
-          <About />
-        </ScrollReveal>
+          <div className="animate-enter delay-1">
+            <Projects />
+          </div>
 
-        {/* What I can do for you (Services 4-column row) */}
-        <ScrollReveal>
-          <Services />
-        </ScrollReveal>
+          <div className="animate-enter delay-2">
+            <Experience />
+          </div>
 
-        {/* Selected Work / Featured Projects Grid */}
-        <ScrollReveal>
-          <Projects />
-        </ScrollReveal>
+          <div className="animate-enter delay-3">
+            <Certificates />
+          </div>
+        </main>
 
-        {/* Career Experience & Education Timeline */}
-        <ScrollReveal>
-          <Experience />
-        </ScrollReveal>
-
-        {/* Verified Credentials & Certificate Gallery */}
-        <ScrollReveal>
-          <Certificates />
-        </ScrollReveal>
-
-        {/* Have a Project in Mind? (Yellow Ochre Banner) */}
-        <ScrollReveal>
-          <CallToAction />
-        </ScrollReveal>
-      </main>
-
-      {/* Footer / Contact Section */}
-      <Footer />
+        <div className="animate-enter delay-4">
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 }

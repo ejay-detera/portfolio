@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T13:43:00+08:00",
+  "title": "Design System: E-jay P. Detera Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "signal-ochre": {
+        "role": "primary",
+        "displayName": "Signal Ochre",
+        "canonical": "#E5A93C",
+        "tonalRamp": ["#2d1f06", "#4c350b", "#6e4d11", "#936818", "#b98422", "#E5A93C", "#f0c675", "#f9e5bb"]
+      },
+      "vermilion-spec": {
+        "role": "secondary",
+        "displayName": "Vermilion Spec",
+        "canonical": "#DE4E2B",
+        "tonalRamp": ["#2e0d05", "#52180a", "#782410", "#a13117", "#c43f20", "#DE4E2B", "#eb856c", "#f6c1b4"]
+      },
+      "carbon-ground": {
+        "role": "neutral",
+        "displayName": "Carbon Ground",
+        "canonical": "#0C0C0E",
+        "tonalRamp": ["#0C0C0E", "#131316", "#19191D", "#26262B", "#3f3f46", "#71717a", "#a1a1aa", "#f4f3ef"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Section headers and hero name." },
+      "headline": { "displayName": "Headline", "purpose": "System titles and role titles." },
+      "body": { "displayName": "Body", "purpose": "Engineering descriptions and architecture bullets." },
+      "label": { "displayName": "Label", "purpose": "Tabular indices, dates, stack badges, and repo links." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Color and border transitions on bay hover." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Rectilinear ochre action button for primary dispatch and navigation.",
+      "html": "<button class=\"ds-btn-primary\">CONTACT →</button>",
+      "css": ".ds-btn-primary { background: #E5A93C; color: #0C0C0E; padding: 12px 24px; font-family: monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 0; cursor: pointer; transition: background 0.2s ease; } .ds-btn-primary:hover { background: #f2b94f; } .ds-btn-primary:focus-visible { outline: 2px solid #F4F3EF; outline-offset: 2px; }"
+    },
+    {
+      "name": "Repository Link Control",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Flush rectilinear link control for GitHub source code links.",
+      "html": "<a class=\"ds-btn-repo\" href=\"#\">SOURCE CODE ↗</a>",
+      "css": ".ds-btn-repo { display: inline-flex; align-items: center; gap: 8px; background: #19191D; color: #F4F3EF; padding: 8px 12px; font-family: monospace; font-size: 12px; border: 1px solid #26262B; text-decoration: none; transition: border-color 0.2s ease, color 0.2s ease; } .ds-btn-repo:hover { border-color: #E5A93C; color: #E5A93C; }"
+    },
+    {
+      "name": "Stack Specification Tag",
+      "kind": "chip",
+      "refersTo": "chip-stack",
+      "description": "Monospace technical tag for languages, databases, and SDKs.",
+      "html": "<span class=\"ds-chip\">PostgreSQL</span>",
+      "css": ".ds-chip { display: inline-block; background: #19191D; color: #C8C6BE; padding: 4px 10px; font-family: monospace; font-size: 12px; border: 1px solid #26262B; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Systems Architecture Monograph",
+    "overview": "This design system treats a software engineer's portfolio as an open technical monograph and architectural specification rather than a marketing SaaS template. Built on exposed 1px structural glazing mullions (#26262B) over a matte warm-carbon ground (#0C0C0E), every project, experience milestone, and credential sits inside a crisp rectilinear bay where hierarchy comes from typographic scale and structural division rather than glowing neon borders or floating drop-shadow cards.",
+    "keyCharacteristics": [
+      "Exposed 1px solid #26262B structural mullion grid framing a 1280px (max-w-7xl) central dossier column.",
+      "Three-voice typography pairing industrial Archivo display headlines, readable Plus Jakarta Sans technical prose, and tabular JetBrains Mono specification metadata.",
+      "Open-by-default case study architecture where system highlights, database decisions, and repository links are visible in a single scroll."
+    ],
+    "rules": [
+      {
+        "name": "The Three-Ink Rule",
+        "body": "Every non-hero section is restricted to Warm Paper/Stone text, Carbon/Charcoal grounds, and functional Ochre/Vermilion specification highlights—never multi-color gradients or glowing colored box-shadows.",
+        "section": "colors"
+      },
+      {
+        "name": "The Monospace Discipline Rule",
+        "body": "JetBrains Mono is reserved strictly for tabular metadata, indices, dates, stack tags, and action controls—never for multi-sentence body paragraphs.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glazing Mullion Rule",
+        "body": "Adjacent bays share a single 1px solid #26262B dividing line (divide-x / divide-y) rather than floating as separate rounded cards with outer margins and drop shadows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do expose all flagship project architecture highlights directly inline so recruiters never have to click a modal just to read technical depth.",
+      "Do use tabular-nums on every index (SYS-01, CRD-01), counter, and date range.",
+      "Do pair Archivo headings with Plus Jakarta Sans body prose for scannable hierarchy."
+    ],
+    "donts": [
+      "Don't set body paragraphs in JetBrains Mono.",
+      "Don't hide 4–8 portfolio items inside pagination carousels or touch-swipe sliders.",
+      "Don't use glowing neon shadows, glassmorphism cards, or unbacked 4-column SaaS feature rows."
+    ]
+  }
+}
