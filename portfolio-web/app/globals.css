@@ -1,138 +1,155 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 @theme {
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-hanken), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root {
-  /* Architectural Monograph Palette: Warm Carbon ground, Exposed 1px Mullion grid, High-contrast crisp text */
-  --bg-base: #0C0C0E;
-  --bg-card: #131316;
-  --bg-subtle: #19191D;
-  --border-color: #26262B;
-  --border-muted: #1E1E22;
-  --text-primary: #FFFFFF;
-  --text-secondary: #E2E8F0;
-  --text-muted: #A1A1AA;
-  --brand-yellow: #E5A93C;
-  --brand-red: #DE4E2B;
-  --button-text: #0C0C0E;
+  /* Surfaces: gray-black (DESIGN.md §3) */
+  --bg:            oklch(0.19 0.005 60);  /* ~#171615 base */
+  --bg-raised:     oklch(0.225 0.006 60); /* ~#1e1d1b alternate sections */
+  --bg-sunken:     oklch(0.16 0.005 60);  /* ~#121110 inputs, wells */
+  --line:          oklch(0.31 0.007 60);  /* hairlines */
+  --line-strong:   oklch(0.41 0.008 60);
+
+  /* Text */
+  --text:          oklch(0.97 0.006 85);  /* headings, warm off-white */
+  --text-body:     oklch(0.85 0.008 80);
+  --text-muted:    oklch(0.68 0.01 75);
+  --text-faint:    oklch(0.55 0.01 70);
+
+  /* Primary accent: orange */
+  --accent:        oklch(0.70 0.19 48);   /* ~#f97316 */
+  --accent-hover:  oklch(0.75 0.18 52);
+  --accent-press:  oklch(0.64 0.19 46);
+  --on-accent:     oklch(0.18 0.005 60);  /* dark text on orange */
+
+  /* Secondary highlight: dandelion */
+  --highlight:     oklch(0.87 0.16 92);   /* ~#fbd33b */
+  --on-highlight:  oklch(0.18 0.005 60);
+
+  /* Feedback */
+  --danger:        oklch(0.68 0.20 25);
+  --success:       oklch(0.75 0.16 155);
+
   color-scheme: dark;
 }
 
 html {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  scroll-behavior: smooth;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   color-scheme: dark;
 }
 
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
+  background-color: var(--bg);
+  color: var(--text-body);
   overflow-x: hidden;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Defensive override ensuring text-base is always font-size 1rem, never background color */
-.text-base,
-.sm\:text-base {
+/* Fluid Typography Scale (DESIGN.md §4) */
+.text-display {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.text-h2 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.text-h3 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.text-stat {
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-body-custom {
   font-size: 1rem;
-  line-height: 1.5rem;
+  line-height: 1.65;
+  letter-spacing: 0;
+  max-width: 62ch;
 }
 
-/* Browser Surface Theming */
-::selection {
-  background-color: var(--brand-yellow);
-  color: #0C0C0E;
+.text-small-custom {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  letter-spacing: 0;
 }
 
-:focus-visible {
-  outline: 2px solid var(--brand-yellow);
-  outline-offset: 2px;
-}
-
-a {
-  text-underline-offset: 4px;
+.text-eyebrow {
+  font-size: 0.7rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Globally disable image dragging across all browsers */
+/* Browser Surface Theming */
+::selection {
+  background-color: var(--highlight);
+  color: var(--on-highlight);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Image Drag Prevention */
 img {
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* Custom Architectural Scrollbars */
+/* Minimal Flat Hairline Scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #26262B #0C0C0E;
+  scrollbar-color: var(--line) var(--bg);
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #0C0C0E;
+  background: var(--bg);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #26262B;
-  transition: background-color 0.2s ease;
+  background: var(--line);
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #E5A93C;
-}
-
-/* Initial Page Load Staggered Entrance Animation */
-@keyframes monographReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(4px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-.animate-enter {
-  animation: monographReveal 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.delay-1 {
-  animation-delay: 80ms;
-}
-
-.delay-2 {
-  animation-delay: 160ms;
-}
-
-.delay-3 {
-  animation-delay: 240ms;
-}
-
-.delay-4 {
-  animation-delay: 320ms;
+  background: var(--accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-enter {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-  html {
-    scroll-behavior: auto;
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

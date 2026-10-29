@@ -1,183 +1,200 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
+import { useSmoothScroll } from "./SmoothScrollProvider";
 
-const NAV_ITEMS = [
+const NAV_LINKS = [
+  { name: "Home", href: "#home" },
+  { name: "About", href: "#about" },
+  { name: "Skills", href: "#skills" },
   { name: "Systems", href: "#projects" },
-  { name: "Experience & Stack", href: "#experience" },
+  { name: "Experience", href: "#experience" },
   { name: "Credentials", href: "#credentials" },
   { name: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState("");
+  const [hidden, setHidden] = useState(false);
+  const [activeSection, setActiveSection] = useState("#home");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const lastScrollY = useRef(0);
+  const { scrollTo, stop, start } = useSmoothScroll();
 
+  // Track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY < 100) {
-        setActiveSection("");
-        return;
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 120 && currentScrollY > lastScrollY.current + 8) {
+        setHidden(true);
+      } else if (currentScrollY < lastScrollY.current - 8 || currentScrollY <= 80) {
+        setHidden(false);
       }
+      lastScrollY.current = currentScrollY;
 
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 60) {
-        setActiveSection("#contact");
-        return;
-      }
-
-      const navThreshold = 180;
-      let matched = "";
-
-      for (const item of NAV_ITEMS) {
-        const id = item.href.replace("#", "");
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= navThreshold && rect.bottom > navThreshold) {
-            matched = item.href;
+      // Determine active nav section based on scroll position
+      const scrollPos = currentScrollY + 120;
+      for (let i = NAV_LINKS.length - 1; i >= 0; i--) {
+        const target = document.querySelector(NAV_LINKS[i].href);
+        if (target) {
+          const top = (target as HTMLElement).offsetTop;
+          if (scrollPos >= top) {
+            setActiveSection(NAV_LINKS[i].href);
             break;
           }
         }
       }
-
-      if (matched) {
-        setActiveSection(matched);
-      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (mobileOpen) {
+      stop();
+    } else {
+      start();
+    }
+  }, [mobileOpen, stop, start]);
+
+  const handleNavClick = (href: string) => {
     setActiveSection(href);
     setMobileOpen(false);
-    const id = href.replace("#", "");
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -64;
-      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
+    scrollTo(href, { offset: 0 }); // offset 0 allows section to fit the screen
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[var(--bg-base)]/95 border-b border-[var(--border-color)]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Brand Identity */}
-          <a
-            href="#home"
-            onClick={(e) => handleNavClick(e, "#home")}
-            className="flex items-center gap-3 font-display font-bold tracking-tight text-sm sm:text-base text-[var(--text-primary)] hover:text-[var(--brand-yellow)] transition-colors"
-          >
-            <img
-              src="/EJ-LOGO.png"
-              alt="E-jay Detera Logo"
-              draggable={false}
-              className="h-5 w-auto object-contain select-none"
-            />
-            <span>E-JAY P. DETERA</span>
-            <span className="hidden lg:inline-block text-xs font-mono font-normal text-[var(--text-muted)] border-l border-[var(--border-color)] pl-3">
-              BSIT · PUP QC
-            </span>
-          </a>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center h-full divide-x divide-[var(--border-color)] border-x border-[var(--border-color)]">
-            {NAV_ITEMS.map((item) => {
-              const isActive = activeSection === item.href;
-              return (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`flex items-center h-full px-5 text-xs font-mono tracking-wider uppercase transition-colors ${
-                    isActive
-                      ? "bg-[var(--bg-subtle)] text-[var(--brand-yellow)] font-semibold"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]"
-                  }`}
-                >
-                  {item.name}
-                </a>
-              );
-            })}
-          </nav>
-
-          {/* Desktop Right Action */}
-          <div className="hidden md:flex items-center gap-3">
-            <a
-              href="https://github.com/ejay-detera"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+    <>
+      <header
+        className={`sticky top-0 z-40 w-full transition-transform duration-300 ease-out border-b border-[var(--line)] ${
+          hidden ? "-translate-y-full" : "translate-y-0"
+        }`}
+        style={{
+          backgroundColor: "color-mix(in oklch, var(--bg) 85%, transparent)",
+        }}
+      >
+        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12">
+          <div className="flex h-18 items-center justify-between">
+            {/* Left: Logo & Wordmark */}
+            <button
+              type="button"
+              onClick={() => handleNavClick("#home")}
+              className="flex items-center gap-3 cursor-pointer group text-left"
             >
-              GitHub ↗
-            </a>
-            <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, "#contact")}
-              className="inline-flex items-center gap-2 bg-[var(--text-primary)] text-[#0C0C0E] px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider hover:bg-[var(--brand-yellow)] transition-colors"
+              <Image
+                src="/EJ-LOGO.png"
+                alt="E-jay Detera Logo"
+                width={22}
+                height={22}
+                className="w-5.5 h-auto object-contain"
+                priority
+              />
+              <span className="font-semibold text-base text-[var(--text)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
+                E-jay Detera
+              </span>
+            </button>
+
+            {/* Desktop Navigation with Active Orange Box Highlight (media_1793300142042_02295cf9.png) */}
+            <nav className="hidden md:flex items-center gap-3">
+              {NAV_LINKS.map((link) => {
+                const isActive = activeSection === link.href;
+                return (
+                  <button
+                    key={link.name}
+                    type="button"
+                    onClick={() => handleNavClick(link.href)}
+                    className={`relative text-sm px-3.5 py-1.5 transition-colors cursor-pointer ${
+                      isActive
+                        ? "text-[var(--text)] border-2 border-[var(--accent)] font-semibold"
+                        : "text-[var(--text-muted)] hover:text-[var(--text)] border-2 border-transparent"
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              aria-label="Toggle navigation menu"
+              className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
             >
-              <span>Contact</span>
-              <span>→</span>
-            </a>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen((prev) => !prev)}
-            aria-expanded={mobileOpen}
-            aria-label="Toggle navigation menu"
-            className="md:hidden inline-flex items-center justify-center px-3 py-2 border border-[var(--border-color)] bg-[var(--bg-card)] text-xs font-mono uppercase tracking-wider text-[var(--text-primary)] hover:border-[var(--brand-yellow)]"
-          >
-            {mobileOpen ? "Close [×]" : "Menu [≡]"}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Drawer */}
-      {mobileOpen && (
-        <nav className="md:hidden border-t border-[var(--border-color)] bg-[var(--bg-base)] divide-y divide-[var(--border-color)]">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.href;
-            return (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className={`block px-6 py-3.5 text-xs font-mono uppercase tracking-wider ${
-                  isActive
-                    ? "bg-[var(--bg-subtle)] text-[var(--brand-yellow)] font-bold"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              <span
+                className={`w-6 h-[1.5px] bg-[var(--text)] transition-transform duration-200 ${
+                  mobileOpen ? "rotate-45 translate-y-[4.5px]" : ""
                 }`}
-              >
-                {item.name}
-              </a>
-            );
-          })}
-          <div className="px-6 py-4 flex items-center justify-between bg-[var(--bg-card)]">
-            <a
-              href="https://github.com/ejay-detera"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-            >
-              github.com/ejay-detera ↗
-            </a>
-            <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, "#contact")}
-              className="bg-[var(--brand-yellow)] text-[#0C0C0E] px-4 py-2 text-xs font-mono font-bold uppercase"
-            >
-              Contact →
-            </a>
+              />
+              <span
+                className={`w-6 h-[1.5px] bg-[var(--text)] transition-transform duration-200 ${
+                  mobileOpen ? "-rotate-45 -translate-y-[4.5px]" : ""
+                }`}
+              />
+            </button>
           </div>
-        </nav>
-      )}
-    </header>
+        </div>
+      </header>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-[var(--bg)]/92 flex flex-col md:hidden"
+            data-lenis-prevent
+          >
+            <div className="flex h-18 items-center justify-between px-5 sm:px-8 border-b border-[var(--line)]">
+              <span className="font-semibold text-base text-[var(--text)]">Navigation</span>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="w-10 h-10 flex items-center justify-center text-lg text-[var(--text)] cursor-pointer"
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 flex flex-col justify-center px-8 py-10 space-y-4">
+              {NAV_LINKS.map((link, idx) => {
+                const isActive = activeSection === link.href;
+                return (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.04, duration: 0.3 }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick(link.href)}
+                      className={`text-2xl font-bold py-1.5 px-3 transition-colors text-left cursor-pointer border-2 ${
+                        isActive
+                          ? "border-[var(--accent)] text-[var(--text)]"
+                          : "border-transparent text-[var(--text-muted)] hover:text-[var(--text)]"
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="p-8 border-t border-[var(--line)] text-xs text-[var(--text-muted)] flex justify-between">
+              <span>E-jay P. Detera</span>
+              <span>PUP QC · BSIT</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

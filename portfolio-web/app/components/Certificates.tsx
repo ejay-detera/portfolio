@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
+import { useSmoothScroll } from "./SmoothScrollProvider";
 
 export interface Certificate {
   id: string;
+  index: string;
   title: string;
   category: string;
   issuer: string;
-  date: string;
+  year: string;
   image: string;
   description: string;
 }
@@ -16,70 +19,77 @@ export interface Certificate {
 const CERTIFICATES: Certificate[] = [
   {
     id: "ai-ready",
+    index: "01",
     title: "AI Ready ASEAN Youth Challenge",
     category: "AI & Hackathons",
     issuer: "AI Singapore & ASEAN Foundation",
-    date: "May 2026",
+    year: "2026",
     image: "/ai-ready-hackathon-cert.jpg",
     description:
       "Certificate of Appreciation for contributing regional AI solutions tackling ASEAN sustainable development challenges.",
   },
   {
     id: "p2a-hackathon",
+    index: "02",
     title: "P2A ASEAN Virtual Hackathon",
     category: "International Hackathon",
     issuer: "Passage to ASEAN (P2A)",
-    date: "2025 – 2026",
+    year: "2025 – 2026",
     image: "/p2a-hackathon.png",
     description:
       "International collaborative hackathon developing cross-border technology initiatives across ASEAN member institutions.",
   },
   {
     id: "icip-cyber",
+    index: "03",
     title: "ICIP Cybersecurity Certification",
     category: "Cybersecurity",
     issuer: "ICIP Information Security Program",
-    date: "2025",
+    year: "2025",
     image: "/icip-cert.jpg",
     description:
       "Certified proficiency in enterprise cybersecurity defense, penetration testing foundations, and threat mitigation.",
   },
   {
     id: "mabl-testing",
+    index: "04",
     title: "Automated Testing & QA Proficiency",
     category: "Software Quality",
     issuer: "Mabl Quality Engineering",
-    date: "2025",
+    year: "2025",
     image: "/mabl-cert.jpg",
     description:
       "Proficiency in automated test authoring, end-to-end regression validation, and continuous testing in CI/CD pipelines.",
   },
   {
     id: "intro-cyber",
+    index: "05",
     title: "Introduction to Cybersecurity",
     category: "Security Foundations",
     issuer: "Cisco Networking Academy",
-    date: "2024",
+    year: "2024",
     image: "/intro-to-cyber-cert.jpg",
     description:
-      "Comprehensive foundational certification in computer network security, encryption principles, and vulnerability scanning.",
+      "Foundational certification in computer network security, encryption principles, and vulnerability scanning.",
   },
   {
     id: "linking-circles",
+    index: "06",
     title: "Linking Circles: Ideas into Tech Ventures",
     category: "Entrepreneurship",
     issuer: "Commonwealth Information Society, PUP QC",
-    date: "Feb 2026",
+    year: "2026",
     image: "/Webinar-Linking-Circles_Feb27_E-Certificate_page-0001.jpg",
     description:
       "Technology venturing workshop focusing on business model generation, seed pitching, and technical MVP validation.",
   },
   {
     id: "career-ai",
+    index: "07",
     title: "Career in the Era of Artificial Intelligence",
     category: "AI Industry",
     issuer: "CommITs Technical Assembly, PUP QC",
-    date: "Jan 2026",
+    year: "2026",
     image: "/Webinar-Career-Guidance_Jan10_E-Certificate_page-0001.jpg",
     description:
       "Executive seminar exploring enterprise AI disruption, LLM deployment architectures, and developer roles in modern tech.",
@@ -88,138 +98,147 @@ const CERTIFICATES: Certificate[] = [
 
 export default function Certificates() {
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const { stop, start } = useSmoothScroll();
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (selectedCert) {
+      stop();
+    } else {
+      start();
+    }
+  }, [selectedCert, stop, start]);
 
   useEffect(() => {
-    if (!selectedCert) return;
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSelectedCert(null);
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalStyle;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedCert]);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <section
       id="credentials"
-      className="border-b border-[var(--border-color)] text-[var(--text-primary)]"
+      className="py-20 sm:py-28 lg:py-36 bg-[var(--bg-raised)] border-b border-[var(--line)]"
     >
-      <div className="mx-auto max-w-7xl border-x border-[var(--border-color)] bg-[var(--bg-base)]/80 backdrop-blur-[2px]">
-        {/* Section Header */}
-        <div className="px-6 py-7 sm:px-10 border-b border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <h2 className="font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              Verified Credentials & Hackathons
-            </h2>
-            <p className="text-sm text-[var(--text-secondary)] max-w-2xl">
-              International ASEAN hackathon recognitions, cybersecurity certifications, and automated QA credentials. Select any record to inspect the certificate document.
-            </p>
-          </div>
-          <div className="text-xs font-mono text-[var(--text-muted)] tabular-nums shrink-0">
-            {CERTIFICATES.length} VERIFIED RECORDS
-          </div>
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 space-y-12">
+        
+        {/* Header */}
+        <div className="space-y-3 pb-4">
+          <span className="text-eyebrow text-[var(--accent)]">/ CREDENTIALS</span>
+          <h2 className="text-h2 text-[var(--text)] tracking-tight">
+            Recognitions and certifications
+          </h2>
         </div>
 
-        {/* Architectural Credential Ledger */}
-        <div className="divide-y divide-[var(--border-color)]">
-          {CERTIFICATES.map((cert, idx) => (
+        {/* Table-style hairline rows: Index, Title, Issuer, Year, View ↗ */}
+        <div className="border-t border-[var(--line)] divide-y divide-[var(--line)]">
+          {CERTIFICATES.map((cert) => (
             <button
               key={cert.id}
               type="button"
               onClick={() => setSelectedCert(cert)}
-              className="w-full text-left grid grid-cols-1 lg:grid-cols-12 items-center gap-4 px-6 py-5 sm:px-10 hover:bg-[var(--bg-card)] transition-colors group cursor-pointer"
+              className="w-full text-left py-6 px-2 sm:px-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center hover:bg-[var(--bg)] transition-colors group cursor-pointer"
             >
-              {/* Col 1-2: Index & Date */}
-              <div className="lg:col-span-2 flex items-center gap-3">
-                <span className="text-xs font-mono text-[var(--text-muted)] tabular-nums">
-                  CRD-0{idx + 1}
-                </span>
-                <span className="text-xs font-mono text-[var(--brand-yellow)] tabular-nums">
-                  {cert.date}
-                </span>
+              {/* Index */}
+              <div className="md:col-span-1 text-sm font-semibold tabular-nums text-[var(--text-muted)] group-hover:text-[var(--highlight)] transition-colors">
+                {cert.index}
               </div>
 
-              {/* Col 3-7: Prominent Title & Summary */}
-              <div className="lg:col-span-5 space-y-1">
-                <div className="font-display text-base sm:text-lg font-bold text-white group-hover:text-[var(--brand-yellow)] transition-colors">
+              {/* Title & Description */}
+              <div className="md:col-span-6 space-y-0.5">
+                <div className="text-base sm:text-lg font-semibold text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
                   {cert.title}
                 </div>
-                <p className="text-xs text-gray-300 line-clamp-1">
+                <div className="text-xs text-[var(--text-muted)]">
                   {cert.description}
-                </p>
+                </div>
               </div>
 
-              {/* Col 8-9: Issuer */}
-              <div className="lg:col-span-2 text-xs font-mono text-gray-200">
+              {/* Issuer */}
+              <div className="md:col-span-3 text-xs sm:text-sm text-[var(--text-muted)]">
                 {cert.issuer}
               </div>
 
-              {/* Col 10-12: Consistent Single-Line Category Tag & Fixed Action Button */}
-              <div className="lg:col-span-3 flex items-center lg:justify-end gap-3">
-                <span className="px-2.5 py-1 text-xs font-mono uppercase whitespace-nowrap bg-[var(--bg-subtle)] text-gray-200 border border-[var(--border-color)]">
-                  {cert.category}
-                </span>
-                <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-mono whitespace-nowrap shrink-0 border border-[var(--border-color)] bg-[var(--bg-card)] text-white group-hover:border-[var(--brand-yellow)] group-hover:text-[var(--brand-yellow)] transition-colors">
-                  VIEW ↗
+              {/* Year & View ↗ */}
+              <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-6 text-xs sm:text-sm">
+                <span className="tabular-nums text-[var(--text-muted)]">{cert.year}</span>
+                <span className="font-semibold text-[var(--accent)] group-hover:translate-x-1 transition-transform">
+                  View ↗
                 </span>
               </div>
             </button>
           ))}
         </div>
+
       </div>
 
-      {/* Certificate Verification Modal */}
-      {mounted &&
-        selectedCert &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 sm:p-6"
+      {/* Flat In-Page Certificate Viewer Modal (Flat 92% --bg, zero blur) */}
+      <AnimatePresence>
+        {selectedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10"
+            style={{ backgroundColor: "oklch(0.19 0.005 60 / 0.92)" }}
+            data-lenis-prevent
           >
-            <div
-              className="relative w-full max-w-3xl border border-[var(--border-color)] bg-[var(--bg-base)] text-white shadow-2xl"
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[var(--bg)] border border-[var(--line)] p-6 sm:p-8 space-y-6"
             >
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-color)] bg-[var(--bg-card)]">
-                <div className="space-y-0.5">
-                  <div className="font-display font-bold text-base text-white">
+              <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-4">
+                <div>
+                  <div className="text-eyebrow text-[var(--accent)]">
+                    {selectedCert.category} · {selectedCert.year}
+                  </div>
+                  <h3 className="text-h3 text-[var(--text)] tracking-tight mt-1">
                     {selectedCert.title}
-                  </div>
-                  <div className="text-xs font-mono text-[var(--text-muted)]">
-                    {selectedCert.issuer} · {selectedCert.date}
-                  </div>
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                    Issued by {selectedCert.issuer}
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedCert(null)}
-                  className="px-3 py-1 text-xs font-mono uppercase border border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] cursor-pointer"
+                  className="text-xs font-semibold uppercase tracking-wider px-3 py-1.5 border border-[var(--line)] text-[var(--text)] hover:border-[var(--text)] cursor-pointer"
                 >
                   Close [ESC]
                 </button>
               </div>
-              <div className="p-4 sm:p-6 bg-[#08080A] max-h-[75vh] overflow-y-auto">
-                <img
+
+              <div className="relative aspect-[4/3] w-full overflow-hidden border border-[var(--line)] bg-[var(--bg-sunken)]">
+                <Image
                   src={selectedCert.image}
                   alt={selectedCert.title}
-                  className="w-full h-auto object-contain mx-auto"
+                  fill
+                  sizes="800px"
+                  className="object-contain"
                 />
               </div>
-              <div className="px-5 py-3 border-t border-[var(--border-color)] bg-[var(--bg-card)] text-xs text-[var(--text-secondary)]">
-                {selectedCert.description}
+
+              <div className="flex items-center justify-between text-xs text-[var(--text-muted)] border-t border-[var(--line)] pt-4">
+                <span>{selectedCert.description}</span>
+                <a
+                  href={selectedCert.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-[var(--accent)] hover:underline shrink-0"
+                >
+                  Open raw asset ↗
+                </a>
               </div>
-            </div>
-          </div>,
-          document.body
+            </motion.div>
+          </motion.div>
         )}
+      </AnimatePresence>
     </section>
   );
 }
