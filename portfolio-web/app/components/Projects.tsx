@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, LayoutGroup } from "motion/react";
+import gsap from "gsap";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { spring } from "../lib/motion";
 import { useSmoothScroll } from "./SmoothScrollProvider";
 
@@ -194,6 +196,195 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { stop, start } = useSmoothScroll();
 
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
+  const currentIndexRef = useRef(0);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [maxIndex, setMaxIndex] = useState(6);
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
+
+  const filteredProjects =
+    activeFilter === "All"
+      ? PROJECTS
+      : PROJECTS.filter((p) => p.filterCategory === activeFilter);
+
+  const updateBounds = useCallback(
+    (itemCount: number) => {
+      if (typeof window === "undefined") return;
+      const w = window.innerWidth;
+      const visibleCols = w >= 1024 ? 2 : 1;
+      const newMax = Math.max(0, itemCount - visibleCols);
+      setMaxIndex(newMax);
+      setCurrentIndex((prev) => {
+        const clamped = Math.min(prev, newMax);
+        currentIndexRef.current = clamped;
+        return clamped;
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    updateBounds(filteredProjects.length);
+    const onResize = () => {
+      updateBounds(filteredProjects.length);
+      if (trackRef.current && cardRefs.current[0]) {
+        const cardWidth = cardRefs.current[0].offsetWidth;
+        gsap.set(trackRef.current, { x: -currentIndexRef.current * cardWidth });
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [filteredProjects.length, updateBounds]);
+
+  const animateToIndex = useCallback(
+    (nextIdx: number, dir: "forward" | "backward") => {
+      if (!trackRef.current || !cardRefs.current[0]) return;
+
+      const cardWidth = cardRefs.current[0].offsetWidth;
+      const targetX = -nextIdx * cardWidth;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // 1. Glide track horizontally with GSAP
+      gsap.to(trackRef.current, {
+        x: targetX,
+        duration: prefersReducedMotion ? 0 : 0.7,
+        ease: "power3.inOut",
+        overwrite: "auto",
+      });
+
+      if (prefersReducedMotion) return;
+
+      // 2. Animate system cards, titles, highlights, and screenshot plates
+      const shiftX = dir === "forward" ? 32 : -32;
+      cardRefs.current.forEach((card, i) => {
+        if (!card) return;
+        const heading = card.querySelector("h3");
+        const bodyItems = card.querySelectorAll(".system-anim-item");
+        const plate = card.querySelector(".system-plate");
+
+        gsap.fromTo(
+          card,
+          { opacity: 0.55 },
+          {
+            opacity: 1,
+            duration: 0.55,
+            ease: "expo.out",
+            overwrite: "auto",
+          }
+        );
+
+        if (plate) {
+          gsap.fromTo(
+            plate,
+            { scale: 0.96, opacity: 0.5 },
+            {
+              scale: 1,
+              opacity: 1,
+              duration: 0.65,
+              ease: "expo.out",
+              overwrite: "auto",
+            }
+          );
+        }
+
+        if (heading) {
+          gsap.fromTo(
+            heading,
+            { x: shiftX * 0.6, opacity: 0.35 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.6,
+              ease: "expo.out",
+              overwrite: "auto",
+            }
+          );
+        }
+
+        if (bodyItems.length) {
+          gsap.fromTo(
+            bodyItems,
+            { x: shiftX, opacity: 0.25 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.65,
+              stagger: 0.04,
+              ease: "expo.out",
+              delay: (i - nextIdx) * 0.03 > 0 ? (i - nextIdx) * 0.03 : 0,
+              overwrite: "auto",
+            }
+          );
+        }
+      });
+    },
+    []
+  );
+
+  const handleFilterChange = (tab: string) => {
+    setActiveFilter(tab);
+    currentIndexRef.current = 0;
+    setCurrentIndex(0);
+    setDirection("forward");
+    if (trackRef.current) {
+      gsap.to(trackRef.current, {
+        x: 0,
+        duration: 0.5,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    }
+    requestAnimationFrame(() => {
+      animateToIndex(0, "forward");
+    });
+  };
+
+  const handlePrev = () => {
+    if (currentIndex <= 0) return;
+    const nextIdx = Math.max(0, currentIndex - 1);
+    const nextDir: "forward" | "backward" = nextIdx === 0 ? "forward" : "backward";
+    currentIndexRef.current = nextIdx;
+    setDirection(nextDir);
+    setCurrentIndex(nextIdx);
+    animateToIndex(nextIdx, "backward");
+  };
+
+  const handleNext = () => {
+    if (currentIndex >= maxIndex) return;
+    const nextIdx = Math.min(maxIndex, currentIndex + 1);
+    const nextDir: "forward" | "backward" = nextIdx >= maxIndex ? "backward" : "forward";
+    currentIndexRef.current = nextIdx;
+    setDirection(nextDir);
+    setCurrentIndex(nextIdx);
+    animateToIndex(nextIdx, "forward");
+  };
+
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 40) {
+      if (deltaX < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   useEffect(() => {
     if (selectedProject) {
       stop();
@@ -210,130 +401,181 @@ export default function Projects() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const filteredProjects =
-    activeFilter === "All"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.filterCategory === activeFilter);
+  const atStart = currentIndex <= 0;
+  const atEnd = currentIndex >= maxIndex;
+
+  // Dynamic orange highlight:
+  // Orange is on Right while advancing; once the end is reached, Orange switches to Left to return
+  const isLeftOrange = (atEnd && !atStart) || (direction === "backward" && !atStart);
+  const isRightOrange = !isLeftOrange && !atEnd;
 
   return (
     <section
       id="projects"
-      className="min-h-screen py-20 sm:py-28 bg-[var(--bg-raised)] border-b border-[var(--line)]"
+      className="relative min-h-[calc(100dvh-4.5rem)] lg:h-[calc(100dvh-4.5rem)] lg:max-h-[calc(100dvh-4.5rem)] flex flex-col justify-center py-6 sm:py-8 lg:py-10 bg-[var(--bg-raised)] border-b border-[var(--line)] overflow-hidden"
     >
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 space-y-12">
+      <div className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 lg:px-12 space-y-4 sm:space-y-6 flex flex-col justify-center">
         
-        {/* Section Header + Filter Tabs */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
-          <div className="space-y-3">
+        {/* Section Header + Filter Tabs + Prev/Next Circular Buttons */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-1">
+          <div className="space-y-2">
             <span className="text-eyebrow text-[var(--accent)]">/ SHIPPED SYSTEMS</span>
             <h2 className="text-h2 text-[var(--text)] tracking-tight">
               Built for real users and real load
             </h2>
           </div>
 
-          {/* Filter Tabs with Sliding Motion Underline */}
-          <div className="flex items-center gap-6 border-b border-[var(--line)] pb-2 overflow-x-auto">
-            {FILTERS.map((tab) => {
-              const isActive = activeFilter === tab;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveFilter(tab)}
-                  className={`relative text-xs uppercase font-medium tracking-wider pb-2 transition-colors cursor-pointer ${
-                    isActive ? "text-[var(--text)] font-semibold" : "text-[var(--text-muted)] hover:text-[var(--text)]"
+          <div className="flex flex-wrap items-center justify-between lg:justify-end gap-5">
+            {/* Filter Tabs with Sliding Motion Underline */}
+            <div className="flex items-center gap-5 border-b border-[var(--line)] pb-1.5 overflow-x-auto">
+              {FILTERS.map((tab) => {
+                const isActive = activeFilter === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => handleFilterChange(tab)}
+                    className={`relative text-xs uppercase font-medium tracking-wider pb-1.5 transition-colors cursor-pointer ${
+                      isActive ? "text-[var(--text)] font-semibold" : "text-[var(--text-muted)] hover:text-[var(--text)]"
+                    }`}
+                  >
+                    <span>{tab}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="project-filter-underline"
+                        className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[var(--accent)]"
+                        transition={spring}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Prev/Next Circular 56px Buttons: hidden on mobile, swipe used instead */}
+            <div className="hidden sm:flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handlePrev}
+                disabled={atStart}
+                aria-label="Previous system"
+                className={`group w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+                  isLeftOrange
+                    ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] active:bg-[var(--accent-press)] text-[var(--on-accent)] cursor-pointer hover:scale-105 active:scale-95"
+                    : atStart
+                    ? "border border-[var(--line)] text-[var(--text-faint)] opacity-45 cursor-not-allowed"
+                    : "border border-[var(--line-strong)] hover:border-[var(--text)] text-[var(--text)] cursor-pointer"
+                }`}
+              >
+                <ArrowLeft
+                  className={`w-5 h-5 transition-transform duration-200 ${
+                    !atStart ? "group-hover:-translate-x-1" : ""
                   }`}
-                >
-                  <span>{tab}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="project-filter-underline"
-                      className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[var(--accent)]"
-                      transition={spring}
-                    />
-                  )}
-                </button>
-              );
-            })}
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={atEnd}
+                aria-label="Next system"
+                className={`group w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+                  isRightOrange
+                    ? "bg-[var(--accent)] hover:bg-[var(--accent-hover)] active:bg-[var(--accent-press)] text-[var(--on-accent)] cursor-pointer hover:scale-105 active:scale-95"
+                    : atEnd
+                    ? "border border-[var(--line)] text-[var(--text-faint)] opacity-45 cursor-not-allowed"
+                    : "border border-[var(--line-strong)] hover:border-[var(--text)] text-[var(--text)] cursor-pointer"
+                }`}
+              >
+                <ArrowRight
+                  className={`w-5 h-5 transition-transform duration-200 ${
+                    !atEnd ? "group-hover:translate-x-1" : ""
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Unified 01-08 Project Rows */}
-        <LayoutGroup>
-          <div className="border-t border-[var(--line)] divide-y divide-[var(--line)]">
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project) => (
-                <motion.article
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => setSelectedProject(project)}
-                  className="group py-10 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start cursor-pointer hover:bg-[var(--bg)]/50 transition-colors px-2 sm:px-4"
-                >
-                  {/* Left: Index & Meta */}
-                  <div className="lg:col-span-1">
-                    <span className="text-lg font-bold tabular-nums text-[var(--text-muted)] group-hover:text-[var(--highlight)] transition-colors">
-                      {project.index}
-                    </span>
-                  </div>
-
-                  {/* Center: Title, Subtitle, Highlights & Stack */}
-                  <div className="lg:col-span-7 space-y-4">
-                    <div className="space-y-1">
-                      <h3 className="text-h3 text-[var(--text)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm text-[var(--text-muted)]">
-                        {project.subtitle}
-                      </p>
-                    </div>
-
-                    <p className="text-sm text-[var(--text-body)] leading-relaxed max-w-[58ch]">
-                      {project.description}
-                    </p>
-
-                    <ul className="space-y-1.5 pt-1">
-                      {project.highlights.map((highlight, idx) => (
-                        <li
-                          key={idx}
-                          className="flex items-start gap-2 text-xs text-[var(--text-muted)]"
-                        >
-                          <span className="text-[var(--accent)] select-none">—</span>
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Plain Comma-Separated Stack (No Pills!) */}
-                    <div className="pt-2 text-xs text-[var(--text-faint)]">
-                      <span className="text-[var(--text-muted)] font-medium">Stack: </span>
-                      <span>{project.tech.join(", ")}</span>
-                    </div>
-                  </div>
-
-                  {/* Right: Screenshot Plate (0 radius, 1px hairline border) */}
-                  <div className="lg:col-span-4 flex flex-col items-end gap-3">
-                    <div className="relative aspect-[16/10] w-full overflow-hidden border border-[var(--line)] bg-[var(--bg-sunken)]">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 360px"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    </div>
-                    <span className="text-xs font-semibold tracking-wider uppercase text-[var(--accent)] group-hover:translate-x-1 transition-transform">
-                      Expand system details →
-                    </span>
-                  </div>
-                </motion.article>
-              ))}
-            </AnimatePresence>
+        {/* Animated Horizontal Systems Track with Touch Swipe */}
+        <div
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          className="relative overflow-hidden border-y border-[var(--line)] select-none touch-pan-y"
+        >
+          {/* Top Hairline Progress Indicator */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-transparent z-10 pointer-events-none">
+            <div
+              className="h-full bg-[var(--accent)] transition-transform duration-500 ease-out origin-left"
+              style={{
+                transform: `scaleX(${maxIndex > 0 ? (currentIndex + 1) / (maxIndex + 1) : 1})`,
+              }}
+            />
           </div>
-        </LayoutGroup>
+
+          <div
+            ref={trackRef}
+            className="flex divide-x divide-[var(--line)] will-change-transform"
+          >
+            {filteredProjects.map((project, idx) => (
+              <article
+                key={project.id}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                onClick={() => setSelectedProject(project)}
+                className="w-full lg:w-1/2 flex-shrink-0 p-4 sm:p-5 lg:p-6 flex flex-col justify-between gap-3 sm:gap-4 cursor-pointer bg-[var(--bg-raised)] hover:bg-[var(--bg)]/60 transition-colors group"
+              >
+                <div className="space-y-3">
+                  {/* Top Row: Constrained Screenshot Plate */}
+                  <div className="system-plate relative h-[170px] sm:h-[190px] lg:h-[200px] w-full overflow-hidden border border-[var(--line)] bg-[var(--bg-sunken)]">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 540px"
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+
+                  {/* Header: Index + Category + Title */}
+                  <div className="space-y-1">
+                    <div className="system-anim-item flex items-center justify-between text-xs">
+                      <span className="text-eyebrow text-[var(--accent)]">
+                        {project.category}
+                      </span>
+                      <span className="font-bold tabular-nums text-[var(--text-muted)] group-hover:text-[var(--highlight)] transition-colors">
+                        {project.index}
+                      </span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[var(--text)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="system-anim-item text-xs sm:text-sm text-[var(--text-muted)] line-clamp-1">
+                      {project.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Description */}
+                  <p className="system-anim-item text-xs sm:text-sm text-[var(--text-body)] leading-relaxed line-clamp-2">
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* Footer: Stack & Expand Action */}
+                <div className="system-anim-item pt-2.5 border-t border-[var(--line)] flex items-center justify-between gap-4">
+                  <div className="text-xs text-[var(--text-faint)] truncate max-w-[70%]">
+                    <span className="text-[var(--text-muted)] font-medium">Stack: </span>
+                    <span>{project.tech.join(", ")}</span>
+                  </div>
+                  <span className="shrink-0 text-xs font-semibold tracking-wider uppercase text-[var(--accent)] group-hover:translate-x-1 transition-transform">
+                    Expand →
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
 
       </div>
 
