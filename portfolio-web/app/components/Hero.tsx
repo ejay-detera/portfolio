@@ -1,131 +1,239 @@
 "use client";
 
+import { useRef } from "react";
+import Image from "next/image";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowDown, Mail } from "lucide-react";
+import { GithubIcon, LinkedinIcon } from "./BrandIcons";
+import { useSmoothScroll } from "./SmoothScrollProvider";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 export default function Hero() {
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -64;
-      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headlineLine1Ref = useRef<HTMLDivElement>(null);
+  const headlineLine2Ref = useRef<HTMLDivElement>(null);
+  const orangeRuleRef = useRef<HTMLDivElement>(null);
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const supportingRef = useRef<HTMLParagraphElement>(null);
+  const scrollBtnRef = useRef<HTMLButtonElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+
+  const { scrollTo } = useSmoothScroll();
+
+  useGSAP(
+    () => {
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReducedMotion) return;
+
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+      // 1. Orange rule scales scaleX 0 -> 1 (origin left)
+      tl.fromTo(
+        orangeRuleRef.current,
+        { scaleX: 0, transformOrigin: "left" },
+        { scaleX: 1, duration: 0.6 }
+      );
+
+      // 2. Headline lines slide up from overflow masks
+      tl.fromTo(
+        [headlineLine1Ref.current, headlineLine2Ref.current],
+        { yPercent: 110 },
+        { yPercent: 0, duration: 1.1, stagger: 0.1 },
+        "-=0.4"
+      );
+
+      // 3. Portrait scales 1.05 -> 1 and fades in smoothly
+      tl.fromTo(
+        portraitRef.current,
+        { scale: 1.05, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1.4 },
+        0.2
+      );
+
+      // 4. Supporting copy and right rail fade & slide up
+      tl.fromTo(
+        [supportingRef.current, railRef.current],
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.08 },
+        "-=0.8"
+      );
+
+      // 5. Scroll button fades in
+      tl.fromTo(
+        scrollBtnRef.current,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.6 },
+        "-=0.4"
+      );
+
+      // Subtle parallax on portrait scrub (travel < 10%)
+      gsap.to(portraitRef.current, {
+        yPercent: 6,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    },
+    { scope: containerRef }
+  );
 
   return (
     <section
       id="home"
-      className="border-b border-[var(--border-color)] text-[var(--text-primary)]"
+      ref={containerRef}
+      className="relative min-h-[calc(100svh-4.5rem)] flex flex-col justify-between bg-[var(--bg)] border-b border-[var(--line)] overflow-hidden"
     >
-      <div className="mx-auto max-w-7xl border-x border-[var(--border-color)] bg-[var(--bg-base)]/80 backdrop-blur-[2px]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-color)]">
-          {/* Left 7 Columns: Engineering Monograph Identity & Thesis */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-10 lg:p-12 space-y-8">
-            <div className="space-y-6">
-              {/* Top Specification Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4 text-xs font-mono text-[var(--text-muted)]">
-                <span className="text-[var(--brand-yellow)] font-semibold uppercase tracking-wider">
-                  Full-Stack Developer & Systems Architect
-                </span>
-                <span className="tabular-nums">QUEZON CITY, PH</span>
-              </div>
+      <div className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 lg:px-12 pt-6 sm:pt-10 pb-0 flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-6 justify-between items-end">
+        
+        {/* Left Column: Headline, Thesis, CTA (z-20) */}
+        <div className="w-full lg:col-span-5 z-20 flex flex-col justify-center pb-8 sm:pb-12 lg:pb-16 space-y-6">
+          {/* Orange Rule */}
+          <div
+            ref={orangeRuleRef}
+            className="w-16 h-[3px] bg-[var(--accent)]"
+          />
 
-              {/* Commanding Display Name */}
-              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-[0.92] text-[var(--text-primary)]">
-                E-jay P.
-                <br />
-                Detera
-              </h1>
+          {/* 2-Line Headline with line-masks */}
+          <h1 className="text-display text-[var(--text)] tracking-tight">
+            <span className="block overflow-hidden py-1">
+              <span ref={headlineLine1Ref} className="block">
+                I&apos;m E-jay, a
+              </span>
+            </span>
+            <span className="block overflow-hidden py-1 text-[var(--text)]">
+              <span ref={headlineLine2Ref} className="block">
+                Full-Stack Developer
+              </span>
+            </span>
+          </h1>
 
-              {/* Engineering Thesis */}
-              <p className="text-sm sm:text-base text-white max-w-[60ch] leading-relaxed">
-                I'm a system developer and architect who build full-stack web applications, cross-platform mobile systems, and normalized relational databases.{" "}
-                <strong className="text-[var(--brand-yellow)] font-semibold">
-                  BSIT Student at Polytechnic University of the Philippines - Quezon City Campus
-                </strong>
-                .
-              </p>
+          {/* Supporting line (max 38ch) */}
+          <p
+            ref={supportingRef}
+            className="text-sm sm:text-base text-[var(--text-muted)] max-w-[38ch] leading-relaxed"
+          >
+            I build full-stack web applications, mobile systems, and normalized databases that hold up in production.
+          </p>
 
-              {/* Action Controls */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection("projects")}
-                  className="inline-flex items-center gap-3 bg-[var(--brand-yellow)] text-[#0C0C0E] px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#f2b94f] transition-colors cursor-pointer"
-                >
-                  <span>Inspect Shipped Systems</span>
-                  <span>↓</span>
-                </button>
+          {/* Circular 56px Orange Scroll Button */}
+          <div className="pt-2">
+            <button
+              ref={scrollBtnRef}
+              type="button"
+              onClick={() => scrollTo("#about")}
+              aria-label="Scroll to About section"
+              className="w-14 h-14 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] active:bg-[var(--accent-press)] flex items-center justify-center text-[var(--on-accent)] transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-none focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+            >
+              <ArrowDown className="w-5 h-5 animate-bounce" style={{ animationDuration: "2.4s" }} />
+            </button>
+          </div>
+        </div>
 
-                <button
-                  type="button"
-                  onClick={() => scrollToSection("contact")}
-                  className="inline-flex items-center gap-2 border border-[var(--border-color)] bg-[var(--bg-subtle)] px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-white hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
-                >
-                  <span>Direct Contact</span>
-                </button>
+        {/* Center: Full Uncut Portrait with Soft Silhouette Backlight (z-10) */}
+        <div
+          ref={portraitRef}
+          className="w-full lg:col-span-4 z-10 flex justify-center items-end relative h-[420px] sm:h-[520px] lg:h-[620px]"
+        >
+          {/* Subtle warm backlight plate to separate black t-shirt from dark ground */}
+          <div
+            aria-hidden="true"
+            className="absolute bottom-6 w-3/4 h-3/5 rounded-full pointer-events-none opacity-45"
+            style={{
+              background: "radial-gradient(ellipse at center, oklch(0.28 0.01 60) 0%, transparent 70%)",
+            }}
+          />
 
-                <a
-                  href="https://github.com/ejay-detera"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-3.5 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--brand-yellow)] transition-colors"
-                >
-                  <span>github.com/ejay-detera</span>
-                  <span>↗</span>
-                </a>
-              </div>
-            </div>
+          <div className="relative w-full h-full flex items-end justify-center">
+            <Image
+              src="/E-jay Hero Section.png"
+              alt="E-jay P. Detera — Portrait"
+              width={600}
+              height={800}
+              priority
+              className="h-full w-auto max-w-none object-contain object-bottom select-none drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
+            />
+          </div>
+        </div>
 
-            {/* Bottom Key Specification Strip */}
-            <div className="grid grid-cols-3 border border-[var(--border-color)] divide-x divide-[var(--border-color)] bg-[var(--bg-card)]/80">
-              <div className="p-3.5 sm:p-4">
-                <div className="font-display text-xl sm:text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">
-                  8+
-                </div>
-                <div className="text-xs font-mono text-[var(--text-muted)] uppercase mt-0.5">
-                  Shipped Systems
-                </div>
-              </div>
-              <div className="p-3.5 sm:p-4">
-                <div className="font-display text-xl sm:text-2xl font-extrabold text-[var(--brand-yellow)]">
-                  Full-Stack
-                </div>
-                <div className="text-xs font-mono text-[var(--text-muted)] uppercase mt-0.5">
-                  Web · Mobile · DB
-                </div>
-              </div>
-              <div className="p-3.5 sm:p-4">
-                <div className="font-display text-xl sm:text-2xl font-extrabold text-[var(--text-primary)]">
-                  PUP QC
-                </div>
-                <div className="text-xs font-mono text-[var(--text-muted)] uppercase mt-0.5">
-                  BSIT Student
-                </div>
-              </div>
-            </div>
+        {/* Right Rail: 3 Stacked Blocks with Hairline Dividers (z-20) */}
+        <div
+          ref={railRef}
+          className="w-full lg:col-span-3 z-20 pb-8 sm:pb-12 lg:pb-16 flex flex-col gap-6 lg:pl-4 divide-y divide-[var(--line)]"
+        >
+          {/* Block 1: About Me */}
+          <div className="space-y-2 pt-2 first:pt-0">
+            <span className="text-eyebrow text-[var(--accent)]">/ ABOUT ME</span>
+            <p className="text-sm text-[var(--text-muted)] leading-snug">
+              BSIT Student at PUP Quezon City campus architecting resilient software.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollTo("#about")}
+              className="group inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+            >
+              <span>Learn more</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </button>
           </div>
 
-          {/* Right 5 Columns: Clean Architectural Portrait Plate (No Eye SVG, No Paint Splashes) */}
-          <div className="lg:col-span-5 flex flex-col justify-between bg-[var(--bg-card)]/40">
-            <div className="px-6 py-3.5 border-b border-[var(--border-color)] flex items-center justify-between text-xs font-mono text-[var(--text-muted)]">
-              <span>FIG. 00 // ENGINEER PROFILE</span>
-              <span className="text-[var(--text-muted)]">PUP QC</span>
-            </div>
+          {/* Block 2: My Work */}
+          <div className="space-y-2 pt-5">
+            <span className="text-eyebrow text-[var(--accent)]">/ MY WORK</span>
+            <p className="text-sm text-[var(--text-muted)] leading-snug">
+              8+ production & hackathon systems shipped across web, mobile, and DB.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollTo("#projects")}
+              className="group inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+            >
+              <span>Browse systems</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </button>
+          </div>
 
-            <div className="relative flex items-end justify-center px-6 pt-8 overflow-hidden min-h-[360px] sm:min-h-[440px]">
-              <img
-                src="/E-jay Hero Section.png"
-                alt="E-jay P. Detera — Full-Stack Developer"
-                draggable={false}
-                className="max-h-[380px] sm:max-h-[450px] w-auto object-contain object-bottom filter contrast-[1.04] select-none"
-              />
-            </div>
-
-            <div className="px-6 py-3.5 border-t border-[var(--border-color)] bg-[var(--bg-card)] flex items-center justify-between text-xs font-mono text-[var(--text-secondary)]">
-              <span>E-JAY P. DETERA</span>
-              <span className="text-[var(--text-muted)]">NEXT.JS · LARAVEL · SUPABASE</span>
+          {/* Block 3: Follow Me */}
+          <div className="space-y-2 pt-5">
+            <span className="text-eyebrow text-[var(--accent)]">/ FOLLOW ME</span>
+            <div className="flex items-center gap-4 pt-1">
+              <a
+                href="https://github.com/ejay-detera"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Profile"
+                className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
+              >
+                <GithubIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/e-jay-detera-56221532b/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
+                className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
+              >
+                <LinkedinIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="mailto:edetera41@gmail.com"
+                aria-label="Send direct email"
+                className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
+              >
+                <Mail className="w-4 h-4" />
+              </a>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );

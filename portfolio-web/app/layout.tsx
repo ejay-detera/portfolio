@@ -1,41 +1,27 @@
 import type { Metadata } from "next";
-import { Archivo, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import PreventDrag from "./components/PreventDrag";
+import SmoothScrollProvider from "./components/SmoothScrollProvider";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
-  display: "swap",
-});
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "E-jay P. Detera — Full-Stack Developer & Systems Architect",
+  title: "E-jay P. Detera — Full-Stack Developer",
   description:
-    "Portfolio of E-jay P. Detera — Full-stack developer, software architect, and BSIT Student at Polytechnic University of the Philippines - Quezon City Campus specializing in resilient web systems, mobile applications, and relational database design.",
+    "Portfolio of E-jay P. Detera — Full-stack developer and BSIT Student at PUP Quezon City building resilient web applications, mobile systems, and normalized databases that hold up in production.",
   keywords: [
     "E-jay Detera",
     "Full-Stack Developer",
-    "Software Architect",
     "Next.js",
     "React",
     "Laravel",
-    "Flutter",
+    "React Native",
     "PUP QC",
   ],
   icons: {
@@ -56,11 +42,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      className={`${hankenGrotesk.variable} dark antialiased`}
+      style={{ colorScheme: "dark" }}
     >
-      <body className="min-h-full font-sans antialiased bg-[var(--bg-base)] text-[var(--text-primary)] selection:bg-[var(--brand-yellow)] selection:text-[#0C0C0E]">
+      <body className="min-h-full font-sans antialiased bg-[var(--bg)] text-[var(--text)] selection:bg-[var(--highlight)] selection:text-[var(--on-highlight)]">
         <PreventDrag />
-        {children}
+        <SmoothScrollProvider>
+          {children}
+        </SmoothScrollProvider>
       </body>
     </html>
   );

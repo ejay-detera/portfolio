@@ -1,124 +1,125 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import Image from "next/image";
+import { AnimatePresence, motion, LayoutGroup } from "motion/react";
+import { spring } from "../lib/motion";
+import { useSmoothScroll } from "./SmoothScrollProvider";
 
 export interface Project {
   id: string;
+  index: string;
   title: string;
   category: "Hackathon Systems" | "School Works" | "Commissions";
-  badge: string;
+  filterCategory: "Hackathon" | "School" | "Commissions";
   subtitle: string;
   description: string;
   longDescription: string;
-  architectureHighlights: string[];
+  highlights: string[];
   tech: string[];
   image: string;
   githubLink: string;
   githubMobileLink?: string;
   liveLink?: string;
-  featured?: boolean;
 }
 
 const PROJECTS: Project[] = [
-  // ---------------- HACKATHON SYSTEMS ----------------
   {
     id: "floodguard",
+    index: "01",
     title: "Floodguard",
     category: "Hackathon Systems",
-    badge: "Disaster Tech",
+    filterCategory: "Hackathon",
     subtitle: "Real-Time Flood Level Monitoring & Offline SOS",
     description:
-      "Real-time flood level monitoring alerts with offline SOS emergency signaling powered by PAGASA API telemetry.",
+      "Real-time flood level alerts and emergency signaling powered by live PAGASA API hydrometeorological telemetry.",
     longDescription:
-      "Floodguard provides real-time flood monitoring alerts and emergency response capabilities during severe weather disturbances. It integrates the Philippine Atmospheric, Geophysical and Astronomical Services Administration (PAGASA) API to ingest live hydrometeorological data, track water level thresholds, and broadcast immediate advisories to at-risk communities. An offline SOS feature allows stranded citizens to transmit emergency distress beacons even when cellular and data connectivity fail.",
-    architectureHighlights: [
+      "Floodguard provides live flood alerts and emergency response capabilities during severe weather disturbances. It ingests PAGASA API streams to track water levels and broadcast immediate advisories. Stranded citizens can transmit offline SOS beacons when data connectivity is lost.",
+    highlights: [
       "Real-time flood telemetry integration via PAGASA API data streams",
-      "Offline SOS emergency beaconing protocol for disaster-stricken areas with compromised connectivity",
-      "Reactive event-driven alerts and live flood level dashboards built on Next.js and Supabase",
+      "Offline SOS beaconing protocol for disaster areas with cut connectivity",
+      "Event-driven alerts and live flood level dashboards on Next.js & Supabase",
     ],
     tech: ["Next.js", "Supabase", "PAGASA API", "TypeScript", "Tailwind CSS"],
     image: "/flood-guard.jpg",
     githubLink: "https://github.com/Zanti00/floodguard-2",
-    featured: true,
   },
   {
     id: "reliefchain",
+    index: "02",
     title: "ReliefChain",
     category: "Hackathon Systems",
-    badge: "Crypto Relief",
+    filterCategory: "Hackathon",
     subtitle: "Decentralized Aid Giving & Choice Platform",
     description:
-      "Relief giving made easier—recipients can pick and choose their relief type (food stamps, cash). Leverages Stellar cryptocurrency for cheaper, faster transactions.",
+      "Recipients choose their relief package (food stamps or cash) powered by the Stellar network for fast, near-zero fee aid disbursement.",
     longDescription:
-      "ReliefChain revolutionizes humanitarian aid distribution by giving beneficiaries direct choice over their aid—empowering them to select between food stamps, essential vouchers, or direct cash relief. By utilizing the Stellar blockchain network, the platform minimizes transaction overhead and remittance delays, operating through a dedicated React Native mobile app for recipients and a Next.js administrative dashboard for relief coordinators.",
-    architectureHighlights: [
-      "Stellar SDK integration enabling near-zero transaction fees and instant cryptographic relief disbursements",
-      "Custom relief allocation module allowing recipients to select food stamps or direct cash relief",
-      "Cross-platform architecture: React Native mobile client for recipients & Next.js admin portal on Supabase",
+      "ReliefChain empowers humanitarian aid recipients by giving them direct autonomy over relief types. Operating on the Stellar blockchain, the system avoids remittance fees and friction, coordinated through a recipient React Native app and coordinator Next.js portal.",
+    highlights: [
+      "Stellar SDK integration enabling near-zero fees and instant cryptographic relief disbursements",
+      "Recipient allocation module allowing choice between food stamps or direct cash relief",
+      "Cross-platform architecture: React Native client + Next.js admin dashboard on Supabase",
     ],
-    tech: ["Next.js", "React Native", "Supabase", "Stellar SDK", "TypeScript", "Tailwind CSS"],
+    tech: ["Next.js", "React Native", "Supabase", "Stellar SDK", "TypeScript"],
     image: "/relief-chain.png",
     githubLink: "https://github.com/ejay-detera/relief-chain-web",
     githubMobileLink: "https://github.com/ejay-detera/relief-chain",
-    featured: true,
   },
   {
     id: "memolink",
+    index: "03",
     title: "Memolink",
     category: "Hackathon Systems",
-    badge: "AI Healthcare",
+    filterCategory: "Hackathon",
     subtitle: "Personalized AI Caregiver & Companion for Seniors",
     description:
-      "Personalized AI caregiver companion for the elderly leveraging Gemini API & NLP, featuring medicine reminders, elderly-specific chatbot, and memory lane.",
+      "AI caregiver companion for the elderly leveraging Gemini API & NLP, featuring medication scheduling and nostalgic memory archiving.",
     longDescription:
-      "Memolink is an intelligent, personalized AI caregiver companion designed to support the elderly and their caregivers. Powered by Google's Gemini API and Natural Language Processing (NLP), the app provides a warm, conversational AI companion tailored to senior citizens, alongside an interactive 'Memory Lane' to preserve and recount cherished life stories. For family and professional caregivers, Memolink provides scheduling tools to input and automate critical medication reminders.",
-    architectureHighlights: [
-      "Empathetic conversational AI chatbot personalized for elderly care using Gemini API and NLP",
-      "Caregiver dashboard for scheduling recurring medicine reminders and tracking patient wellness",
-      "Interactive Memory Lane feature capturing nostalgic life moments and family stories via Supabase",
+      "Memolink is an AI companion designed to assist senior citizens and family caregivers. Powered by Gemini API and NLP, it provides an empathetic conversational companion, recurring medication alert automation, and interactive storytelling for family memories.",
+    highlights: [
+      "Conversational AI companion personalized for senior citizens using Gemini API and NLP",
+      "Caregiver dashboard for automated recurring medication scheduling",
+      "Interactive Memory Lane feature capturing nostalgic life moments via Supabase",
     ],
     tech: ["React Native", "Supabase", "Gemini API", "NLP", "TypeScript"],
     image: "/memo-link.png",
     githubLink: "https://github.com/ejay-detera/memolink",
-    featured: true,
   },
-
-  // ---------------- SCHOOL WORKS ----------------
   {
     id: "loreforge",
+    index: "04",
     title: "LoreForge",
     category: "School Works",
-    badge: "Solo Project",
+    filterCategory: "School",
     subtitle: "AI-Powered Narrative RPG & Campaign Engine",
     description:
-      "An AI-powered turn-based RPG dynamically orchestrating campaign narratives, combat encounters, and item discoveries via Google Gemini API.",
+      "Turn-based RPG orchestrating dynamic campaign narratives, combat encounters, and item discoveries via structured Gemini API output.",
     longDescription:
-      "LoreForge was developed independently from system architecture through production deployment for an Advanced Database & Emerging Technologies course. The platform leverages Google's Gemini API to generate dynamic storytelling scenarios, procedural NPC dialogue, and encounter outcomes tailored to player choices across multiple genres (Fantasy, Sci-Fi, Horror). Users can publish custom campaigns to the community feed.",
-    architectureHighlights: [
+      "LoreForge was built independently for an Advanced Database & Emerging Technologies course. It utilizes Google's Gemini API to generate dynamic story branching, encounter calculations, and NPC dialogue across Fantasy, Sci-Fi, and Horror settings.",
+    highlights: [
       "Dynamic prompt engineering with structured JSON schema outputs from Gemini API",
       "Relational MySQL schema tracking multi-branch narrative states and player inventory",
-      "Reactive player UI built with React and Tailwind CSS hooked to a Laravel REST API",
+      "Reactive player UI built with React hooked to a Laravel REST API",
     ],
     tech: ["Laravel", "React", "MySQL", "Gemini API", "Tailwind CSS"],
     image: "/LoreForge.jpg",
     githubLink: "https://github.com/ejay-detera/loreforge",
-    featured: true,
   },
   {
     id: "aigo",
+    index: "05",
     title: "AiGO",
     category: "School Works",
-    badge: "Course Project",
+    filterCategory: "School",
     subtitle: "AI-Driven Itinerary & Travel Budgeting Platform",
     description:
-      "AI travel planning platform generating day-by-day itineraries, Unsplash destination visuals, and multi-traveler budget coordination.",
+      "Generative AI travel planner delivering itemized schedules, geo-tagged Unsplash visual assets, and multi-traveler budget calculation.",
     longDescription:
-      "AiGO automates travel planning through generative AI. Users input vacation duration, budget, and travel preferences to receive itemized schedules paired with geo-tagged images from the Unsplash API. A token-based gamification system rewards users who interact with the community by sharing itineraries and tips.",
-    architectureHighlights: [
+      "AiGO automates personalized itinerary generation. Users provide trip parameters to receive optimized travel schedules alongside Unsplash photography, supported by a community itinerary-sharing ledger.",
+    highlights: [
       "Multi-agent prompt pipelining for parallel itinerary generation and budget calculations",
-      "Unsplash API caching layer reducing outbound latency and API quota exhaustion",
-      "MSSQL database schema with stored procedures for reliable community ratings and ledger transactions",
+      "Unsplash API caching layer reducing outbound latency and quota exhaustion",
+      "MSSQL database schema with stored procedures for community ratings",
     ],
     tech: ["Laravel", "React", "MSSQL", "Gemini API", "Unsplash API"],
     image: "/AiGO.jpg",
@@ -126,58 +127,59 @@ const PROJECTS: Project[] = [
   },
   {
     id: "marekwenta",
+    index: "06",
     title: "MareKwenta POS",
     category: "School Works",
-    badge: "Final Course Project",
+    filterCategory: "School",
     subtitle: "Point-of-Sale & Raw-Ingredient Inventory System",
     description:
-      "Desktop point-of-sale system for Mare Cafe handling end-to-end sales, transaction auditing, and automated ingredient deduction upon checkout.",
+      "Desktop point-of-sale for Mare Cafe coordinating checkout, transaction auditing, and automatic raw-ingredient inventory deduction.",
     longDescription:
-      "A robust desktop POS system designed for Mare Cafe. It coordinates order dispatching, receipts generation, real-time inventory deductions at the raw-ingredient level, and analytical end-of-day sales reporting. Contributed to the overall UI layout and engineered the core business logic and SQLite database layer.",
-    architectureHighlights: [
-      "Atomic SQLite transactions preventing inventory desynchronization during high-traffic order bursts",
-      "Modular Object-Oriented C# WinForms design pattern with clear separation of concerns",
-      "Dynamic recipe-to-inventory deduction algorithm mapping menu items to grams/milliliters of stock",
+      "A desktop POS engineered in C# WinForms for Mare Cafe. It manages order dispatching, physical receipt generation, raw-ingredient level stock deduction per recipe, and end-of-day revenue auditing.",
+    highlights: [
+      "Atomic SQLite transactions preventing inventory desynchronization during high bursts",
+      "Modular Object-Oriented C# WinForms architecture with strict separation of concerns",
+      "Dynamic recipe-to-inventory deduction algorithm mapping menu items to grams of stock",
     ],
     tech: ["C#", "SQLite", "WinForms", ".NET Framework"],
     image: "/MareKwenta POS.jpg",
     githubLink: "https://github.com/ejay-detera/MareKwenta-POS",
   },
-
-  // ---------------- COMMISSIONS ----------------
   {
     id: "cyperus",
+    index: "07",
     title: "Cyperus",
     category: "Commissions",
-    badge: "Commissioned Capstone",
+    filterCategory: "Commissions",
     subtitle: "AI-Powered Adaptive E-Commerce Marketplace",
     description:
-      "Commissioned e-commerce web platform for PLMun capstone that learns customer browsing patterns to provide hyper-personalized recommendations.",
+      "Commissioned capstone e-commerce platform that observes customer browsing patterns to provide hyper-personalized recommendations.",
     longDescription:
-      "Cyperus was commissioned as a capstone application for PLMun students. The platform observes customer navigation patterns, frequently viewed storefronts, and purchasing history to feed an intelligent recommendation engine. Served as the lead full-stack developer responsible for the shopping catalog, cart flow, and secure order processing.",
-    architectureHighlights: [
-      "Server-side rendered Next.js catalog ensuring SEO discoverability and sub-second page loads",
-      "PostgreSQL normalized database with complex indexing for product search and filtering",
-      "Clean modular API routes handling checkout workflows and inventory reservation",
+      "Cyperus was developed as a commissioned capstone application. The platform adapts storefront recommendations based on search history and category interaction. Served as lead full-stack developer on the catalog, cart, and order pipeline.",
+    highlights: [
+      "Server-side rendered Next.js catalog ensuring search indexing and fast load times",
+      "PostgreSQL normalized database with indexes for product search and filtering",
+      "Modular API routes handling checkout workflows and inventory reservation",
     ],
-    tech: ["Next.js", "PostgreSQL", "Tailwind CSS", "TypeScript", "AI Integration"],
+    tech: ["Next.js", "PostgreSQL", "Tailwind CSS", "TypeScript"],
     image: "/Cyperus.jpg",
     githubLink: "https://github.com/MaChewwwww/Cyperus",
   },
   {
     id: "trustmart",
+    index: "08",
     title: "TrustMart",
     category: "Commissions",
-    badge: "Commissioned Capstone",
+    filterCategory: "Commissions",
     subtitle: "Security-First AI E-Commerce Platform",
     description:
-      "Full-stack e-commerce solution integrating artificial intelligence for fraud deterrence, seller verification, and personalized discovery.",
+      "E-commerce solution with role-based access control, merchant verification workflows, and fraud deterrence mechanisms.",
     longDescription:
-      "TrustMart was commissioned to demonstrate modern e-commerce security and intelligent consumer matching. Acted as a full-stack engineer responsible for architecting the customer ordering journey, responsive storefront interface, and role-based access control for vendors and admins.",
-    architectureHighlights: [
-      "Role-Based Access Control (RBAC) separating administrative actions, merchant stores, and customer accounts",
-      "Robust PostgreSQL relational models with foreign-key constraints and transaction rollbacks",
-      "Responsive frontend designed to deliver desktop-class speed on mobile browsers",
+      "TrustMart was commissioned to demonstrate secure commerce architecture. Built role-based access control separating platform admins, merchant storefronts, and shoppers, backed by relational data integrity and transaction rollbacks.",
+    highlights: [
+      "Role-Based Access Control (RBAC) separating admins, merchant stores, and customer accounts",
+      "PostgreSQL relational models with foreign-key constraints and transaction rollbacks",
+      "Responsive frontend delivering desktop-grade speed on mobile browsers",
     ],
     tech: ["Next.js", "PostgreSQL", "Node.js", "Tailwind CSS"],
     image: "/TrustMart.jpg",
@@ -185,384 +187,267 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const CATEGORIES = ["All", "Hackathon Systems", "School Works", "Commissions"] as const;
+const FILTERS = ["All", "Hackathon", "School", "Commissions"] as const;
 
 export default function Projects() {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [previewProject, setPreviewProject] = useState<Project | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { stop, start } = useSmoothScroll();
 
   useEffect(() => {
-    setMounted(true);
+    if (selectedProject) {
+      stop();
+    } else {
+      start();
+    }
+  }, [selectedProject, stop, start]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedProject(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    if (!previewProject) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPreviewProject(null);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [previewProject]);
-
   const filteredProjects =
-    activeCategory === "All"
+    activeFilter === "All"
       ? PROJECTS
-      : PROJECTS.filter((p) => p.category === activeCategory);
-
-  const flagshipProjects =
-    activeCategory === "All"
-      ? filteredProjects.filter((p) => p.featured)
-      : filteredProjects;
-
-  const archiveProjects =
-    activeCategory === "All"
-      ? filteredProjects.filter((p) => !p.featured)
-      : [];
+      : PROJECTS.filter((p) => p.filterCategory === activeFilter);
 
   return (
     <section
       id="projects"
-      className="border-b border-[var(--border-color)] text-[var(--text-primary)]"
+      className="min-h-screen py-20 sm:py-28 bg-[var(--bg-raised)] border-b border-[var(--line)]"
     >
-      <div className="mx-auto max-w-7xl border-x border-[var(--border-color)] bg-[var(--bg-base)]/80 backdrop-blur-[2px]">
-        {/* Section Header Bar */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5 px-6 py-7 sm:px-10 border-b border-[var(--border-color)]">
-          <div className="space-y-1.5">
-            <h2 className="font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              Shipped Systems & Architecture
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 space-y-12">
+        
+        {/* Section Header + Filter Tabs */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
+          <div className="space-y-3">
+            <span className="text-eyebrow text-[var(--accent)]">/ SHIPPED SYSTEMS</span>
+            <h2 className="text-h2 text-[var(--text)] tracking-tight">
+              Built for real users and real load
             </h2>
-            <p className="text-sm text-[var(--text-secondary)] max-w-2xl">
-              Full-stack web platforms, decentralized mobile apps, and relational database engines built for hackathons, academic courses, and client commissions.
-            </p>
           </div>
 
-          {/* Filter Tabs — Single Clean Row, No Wrapping */}
-          <div className="flex flex-wrap sm:flex-nowrap border border-[var(--border-color)] bg-[var(--bg-card)] divide-x divide-[var(--border-color)] w-fit shrink-0">
-            {CATEGORIES.map((category) => {
-              const isActive = activeCategory === category;
-              const count =
-                category === "All"
-                  ? PROJECTS.length
-                  : PROJECTS.filter((p) => p.category === category).length;
-
+          {/* Filter Tabs with Sliding Motion Underline */}
+          <div className="flex items-center gap-6 border-b border-[var(--line)] pb-2 overflow-x-auto">
+            {FILTERS.map((tab) => {
+              const isActive = activeFilter === tab;
               return (
                 <button
-                  key={category}
+                  key={tab}
                   type="button"
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer tabular-nums ${
-                    isActive
-                      ? "bg-[var(--brand-yellow)] text-[#0C0C0E] font-bold"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
+                  onClick={() => setActiveFilter(tab)}
+                  className={`relative text-xs uppercase font-medium tracking-wider pb-2 transition-colors cursor-pointer ${
+                    isActive ? "text-[var(--text)] font-semibold" : "text-[var(--text-muted)] hover:text-[var(--text)]"
                   }`}
                 >
-                  {category} ({count})
+                  <span>{tab}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="project-filter-underline"
+                      className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[var(--accent)]"
+                      transition={spring}
+                    />
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Flagship Open Dossier Rows */}
-        <div className="divide-y divide-[var(--border-color)]">
-          {flagshipProjects.map((project, idx) => (
-            <article
-              key={project.id}
-              className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-color)] transition-colors hover:bg-[var(--bg-card)]/60"
-            >
-              {/* Col 1-2: Specification Index & Repository Links */}
-              <div className="lg:col-span-2 p-6 sm:p-8 flex lg:flex-col justify-between gap-4 bg-[var(--bg-card)]/30">
-                <div className="space-y-2">
-                  <div className="font-mono text-xs text-[var(--text-muted)] tabular-nums">
-                    SYS-0{idx + 1}
+        {/* Unified 01-08 Project Rows */}
+        <LayoutGroup>
+          <div className="border-t border-[var(--line)] divide-y divide-[var(--line)]">
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((project) => (
+                <motion.article
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setSelectedProject(project)}
+                  className="group py-10 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start cursor-pointer hover:bg-[var(--bg)]/50 transition-colors px-2 sm:px-4"
+                >
+                  {/* Left: Index & Meta */}
+                  <div className="lg:col-span-1">
+                    <span className="text-lg font-bold tabular-nums text-[var(--text-muted)] group-hover:text-[var(--highlight)] transition-colors">
+                      {project.index}
+                    </span>
                   </div>
-                  <div className="inline-block px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-[var(--bg-subtle)] text-[var(--brand-yellow)] border border-[var(--border-color)]">
-                    {project.badge}
-                  </div>
-                  <div className="text-xs font-mono text-[var(--text-muted)] pt-1">
-                    {project.category}
-                  </div>
-                </div>
 
-                <div className="flex flex-wrap lg:flex-col gap-2 pt-2">
-                  {project.githubMobileLink ? (
-                    <>
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-between gap-2 px-3 py-2 text-xs font-mono bg-[var(--bg-subtle)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] transition-colors"
-                      >
-                        <span>Web Repo</span>
-                        <span>↗</span>
-                      </a>
-                      <a
-                        href={project.githubMobileLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-between gap-2 px-3 py-2 text-xs font-mono bg-[var(--bg-subtle)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] transition-colors"
-                      >
-                        <span>Mobile Repo</span>
-                        <span>↗</span>
-                      </a>
-                    </>
-                  ) : (
+                  {/* Center: Title, Subtitle, Highlights & Stack */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="space-y-1">
+                      <h3 className="text-h3 text-[var(--text)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-[var(--text-muted)]">
+                        {project.subtitle}
+                      </p>
+                    </div>
+
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed max-w-[58ch]">
+                      {project.description}
+                    </p>
+
+                    <ul className="space-y-1.5 pt-1">
+                      {project.highlights.map((highlight, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 text-xs text-[var(--text-muted)]"
+                        >
+                          <span className="text-[var(--accent)] select-none">—</span>
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Plain Comma-Separated Stack (No Pills!) */}
+                    <div className="pt-2 text-xs text-[var(--text-faint)]">
+                      <span className="text-[var(--text-muted)] font-medium">Stack: </span>
+                      <span>{project.tech.join(", ")}</span>
+                    </div>
+                  </div>
+
+                  {/* Right: Screenshot Plate (0 radius, 1px hairline border) */}
+                  <div className="lg:col-span-4 flex flex-col items-end gap-3">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden border border-[var(--line)] bg-[var(--bg-sunken)]">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 360px"
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <span className="text-xs font-semibold tracking-wider uppercase text-[var(--accent)] group-hover:translate-x-1 transition-transform">
+                      Expand system details →
+                    </span>
+                  </div>
+                </motion.article>
+              ))}
+            </AnimatePresence>
+          </div>
+        </LayoutGroup>
+
+      </div>
+
+      {/* In-Place Shared Layout / Modal Expand (Flat 92% --bg, zero blur) */}
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProject(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10"
+            style={{ backgroundColor: "oklch(0.19 0.005 60 / 0.92)" }}
+            data-lenis-prevent
+          >
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[var(--bg)] border border-[var(--line)] p-6 sm:p-10 space-y-6"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-5">
+                <div>
+                  <div className="text-eyebrow text-[var(--accent)]">
+                    {selectedProject.category} · {selectedProject.index}
+                  </div>
+                  <h3 className="text-h2 text-[var(--text)] tracking-tight mt-1">
+                    {selectedProject.title}
+                  </h3>
+                  <p className="text-sm text-[var(--text-muted)] mt-1">
+                    {selectedProject.subtitle}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(null)}
+                  className="text-xs font-semibold uppercase tracking-wider px-3 py-1.5 border border-[var(--line)] text-[var(--text)] hover:border-[var(--text)] cursor-pointer"
+                >
+                  Close [ESC]
+                </button>
+              </div>
+
+              {/* Full Screenshot */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden border border-[var(--line)] bg-[var(--bg-sunken)]">
+                <Image
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  fill
+                  sizes="800px"
+                  className="object-cover object-top"
+                />
+              </div>
+
+              {/* Detailed Narrative */}
+              <div className="space-y-4">
+                <h4 className="text-xs uppercase font-semibold tracking-wider text-[var(--text-muted)]">
+                  Architecture & Systems Narrative
+                </h4>
+                <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed">
+                  {selectedProject.longDescription}
+                </p>
+              </div>
+
+              {/* Architecture Highlights */}
+              <div className="space-y-2 border-t border-[var(--line)] pt-4">
+                <h4 className="text-xs uppercase font-semibold tracking-wider text-[var(--text-muted)]">
+                  Highlights
+                </h4>
+                <ul className="space-y-2">
+                  {selectedProject.highlights.map((h, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--text-body)]">
+                      <span className="text-[var(--accent)] select-none">—</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Actions & Repositories */}
+              <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-5">
+                <div className="text-xs text-[var(--text-faint)]">
+                  <span className="text-[var(--text-muted)] font-medium">Stack: </span>
+                  {selectedProject.tech.join(", ")}
+                </div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={selectedProject.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider uppercase bg-[var(--accent)] text-[var(--on-accent)] hover:bg-[var(--accent-hover)] transition-colors cursor-pointer"
+                  >
+                    <span>View Repository</span>
+                    <span>↗</span>
+                  </a>
+                  {selectedProject.githubMobileLink && (
                     <a
-                      href={project.githubLink}
+                      href={selectedProject.githubMobileLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-between gap-2 px-3 py-2 text-xs font-mono bg-[var(--bg-subtle)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider uppercase border border-[var(--line)] text-[var(--text)] hover:border-[var(--text)] transition-colors cursor-pointer"
                     >
-                      <span>Source Code</span>
+                      <span>Mobile Repo</span>
                       <span>↗</span>
                     </a>
                   )}
                 </div>
               </div>
-
-              {/* Col 3-7: Core Engineering Narrative & Inline Architecture Notes */}
-              <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-6">
-                <div className="space-y-3">
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm font-mono text-[var(--brand-red)]">
-                    {project.subtitle}
-                  </p>
-                  <p className="text-sm sm:text-base text-white leading-relaxed max-w-[68ch]">
-                    {project.longDescription}
-                  </p>
-                </div>
-
-                {/* Inline Architecture Highlights (Never hidden behind a modal) */}
-                <div className="space-y-2.5 border-t border-[var(--border-color)] pt-5">
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">
-                    Architecture & Engineering Highlights
-                  </h4>
-                  <ul className="space-y-2">
-                    {project.architectureHighlights.map((highlight, hIdx) => (
-                      <li
-                        key={hIdx}
-                        className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--text-primary)] leading-relaxed"
-                      >
-                        <span className="font-mono text-[var(--brand-yellow)] select-none mt-0.5">
-                          —
-                        </span>
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tech Stack Strip */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {project.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2.5 py-1 text-xs font-mono bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-color)]"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Col 8-12: Visual Artifact Plate */}
-              <div className="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between bg-[var(--bg-card)]/40">
-                <button
-                  type="button"
-                  onClick={() => setPreviewProject(project)}
-                  className="group relative w-full overflow-hidden border border-[var(--border-color)] bg-[#08080A] text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--brand-yellow)]"
-                  aria-label={`Inspect ${project.title} interface screenshot`}
-                >
-                  <div className="aspect-[16/10] w-full overflow-hidden">
-                    <img
-                      src={project.image}
-                      alt={`${project.title} — ${project.subtitle}`}
-                      draggable={false}
-                      className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between px-3 py-2 border-t border-[var(--border-color)] bg-[var(--bg-card)] text-xs font-mono text-[var(--text-muted)] group-hover:text-[var(--brand-yellow)] transition-colors">
-                    <span>FIG. 0{idx + 1} // {project.title.toUpperCase()}</span>
-                    <span>EXPAND [+]</span>
-                  </div>
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Remaining Archive Systems (2-Column Structural Grid when viewing "All") */}
-        {archiveProjects.length > 0 && (
-          <div className="border-t border-[var(--border-color)]">
-            <div className="px-6 py-5 sm:px-10 bg-[var(--bg-card)] border-b border-[var(--border-color)] flex items-center justify-between">
-              <h3 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
-                Additional Course & Commissioned Systems
-              </h3>
-              <span className="text-xs font-mono text-[var(--text-muted)] tabular-nums">
-                SYS-05 — SYS-0{PROJECTS.length}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border-color)]">
-              {archiveProjects.map((project, idx) => (
-                <article
-                  key={project.id}
-                  className={`p-6 sm:p-8 flex flex-col justify-between space-y-5 hover:bg-[var(--bg-card)]/60 transition-colors ${
-                    idx >= 2 ? "border-t border-[var(--border-color)]" : ""
-                  }`}
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono text-[var(--text-muted)] tabular-nums">
-                          SYS-0{idx + 5}
-                        </span>
-                        <span className="px-2 py-0.5 text-xs font-mono uppercase bg-[var(--bg-subtle)] text-[var(--brand-yellow)] border border-[var(--border-color)]">
-                          {project.badge}
-                        </span>
-                      </div>
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-mono text-[var(--text-primary)] hover:text-[var(--brand-yellow)] underline"
-                      >
-                        Source Code ↗
-                      </a>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setPreviewProject(project)}
-                        className="w-28 sm:w-36 flex-shrink-0 border border-[var(--border-color)] bg-[#08080A] overflow-hidden group cursor-pointer"
-                        aria-label={`Expand ${project.title} screenshot`}
-                      >
-                        <div className="aspect-[16/10] w-full overflow-hidden">
-                          <img
-                            src={project.image}
-                            alt={project.title}
-                            draggable={false}
-                            className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform"
-                          />
-                        </div>
-                      </button>
-
-                      <div className="space-y-1">
-                        <h4 className="font-display text-xl font-bold text-[var(--text-primary)]">
-                          {project.title}
-                        </h4>
-                        <p className="text-xs font-mono text-[var(--brand-red)]">
-                          {project.subtitle}
-                        </p>
-                        <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed pt-1">
-                          {project.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <ul className="space-y-1.5 border-t border-[var(--border-color)] pt-3">
-                      {project.architectureHighlights.map((highlight, hIdx) => (
-                        <li
-                          key={hIdx}
-                          className="flex items-start gap-2 text-xs text-[var(--text-secondary)] leading-relaxed"
-                        >
-                          <span className="font-mono text-[var(--brand-yellow)] select-none">
-                            —
-                          </span>
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-2">
-                    {project.tech.map((t) => (
-                      <span
-                        key={t}
-                        className="px-2 py-0.5 text-xs font-mono bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-color)]"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
-
-      {/* Screenshot Lightbox Modal */}
-      {mounted &&
-        previewProject &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 sm:p-6"
-            onClick={() => setPreviewProject(null)}
-          >
-            <div
-              className="relative w-full max-w-4xl border border-[var(--border-color)] bg-[var(--bg-base)] text-[var(--text-primary)] shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-color)] bg-[var(--bg-card)]">
-                <div className="flex items-center gap-3">
-                  <span className="font-display font-bold text-base text-white">
-                    {previewProject.title}
-                  </span>
-                  <span className="text-xs font-mono text-[var(--text-muted)]">
-                    {previewProject.subtitle}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPreviewProject(null)}
-                  className="px-3 py-1 text-xs font-mono uppercase border border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--brand-yellow)] hover:text-[var(--brand-yellow)] cursor-pointer"
-                >
-                  Close [ESC]
-                </button>
-              </div>
-              <div className="p-4 sm:p-6 bg-[#08080A] max-h-[75vh] overflow-y-auto">
-                <img
-                  src={previewProject.image}
-                  alt={previewProject.title}
-                  className="w-full h-auto object-contain mx-auto"
-                />
-              </div>
-              <div className="px-5 py-3.5 border-t border-[var(--border-color)] bg-[var(--bg-card)] flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-1.5">
-                  {previewProject.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2 py-0.5 text-xs font-mono bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-color)]"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-3">
-                  <a
-                    href={previewProject.githubLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-1.5 text-xs font-mono font-bold uppercase bg-[var(--brand-yellow)] text-[#0C0C0E] hover:bg-[#f2b94f]"
-                  >
-                    View Repository ↗
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+      </AnimatePresence>
     </section>
   );
 }
