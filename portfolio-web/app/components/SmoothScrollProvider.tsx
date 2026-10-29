@@ -51,8 +51,42 @@ export default function SmoothScrollProvider({
     lenisRef.current = lenis;
     setLenisInstance(lenis);
 
-    // Sync Lenis with GSAP ScrollTrigger
-    lenis.on("scroll", ScrollTrigger.update);
+    // Sync Lenis with GSAP ScrollTrigger and clamp upward overscroll
+    lenis.on("scroll", (e: { scroll: number }) => {
+      if (e.scroll < 0) {
+        lenis.scrollTo(0, { immediate: true });
+        window.scrollTo(0, 0);
+      }
+      ScrollTrigger.update();
+    });
+
+    // Hard-lock upward wheel & touch overscroll at the top of the page
+    const handleWheel = (e: WheelEvent) => {
+      if ((window.scrollY <= 0 || (lenisRef.current?.scroll ?? 0) <= 0) && e.deltaY < 0) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches && e.touches[0]) {
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (
+        (window.scrollY <= 0 || (lenisRef.current?.scroll ?? 0) <= 0) &&
+        e.touches &&
+        e.touches[0] &&
+        e.touches[0].clientY > touchStartY
+      ) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
     const tickerCallback = (time: number) => {
       lenis.raf(time * 1000);
     };
@@ -60,6 +94,9 @@ export default function SmoothScrollProvider({
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
       lenisRef.current = null;
